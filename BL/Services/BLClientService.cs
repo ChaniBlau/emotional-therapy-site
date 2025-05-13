@@ -16,11 +16,13 @@ public class BLClientService : IBLClient
     IClient _clients;
     IBusyAppointment _busyAppointment;
     ITherapist _therapist;
+    IEmptyAppointment _emptyAppointment;
     public BLClientService(IDal dal)
     {
         _clients = dal.Clients;
         _busyAppointment = dal.BusyAppointments;
         _therapist = dal.Therapists;
+        _emptyAppointment = dal.EmptyAppointments;
     }
 
     public async Task<bool> CreateNewClient(Client client)
@@ -60,37 +62,33 @@ public class BLClientService : IBLClient
         }
 
         return busyAppointments
-       .Where(app => app.TherapistId.Equals(id))
+       .Where(app => app.ClientId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase))
        .Select(appointment =>
        {
-           var therapist = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId));
+           var therapistForDetails = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId));
            DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
 
            return new BusyAppointmentForUser
            {
                Date = appointmentDateTime,
-               Name = therapist != null
-                   ? therapist.FirstName + " " + therapist.LastName
-                   : "Unknown Therapist"
+               Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName
            };
        })
        .ToList();
     }
-public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId)
+    //קביעת תור
+    public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId)
     {
-        // Check therapist availability
-        var availableAppointments = await _busyAppointment.ReadAllAsync();
-        var appointmentToRemove = availableAppointments.FirstOrDefault(a =>
+        var emptyAppointments = await _emptyAppointment.ReadAllAsync();
+        var appointmentToScedule = emptyAppointments.FirstOrDefault(a =>
             a.TherapistId.Equals(therapistId, StringComparison.OrdinalIgnoreCase) &&
             a.Date == date &&
             a.Time == time);
 
-        if (appointmentToRemove == null)
+        if (appointmentToScedule == null)
         {
             throw new Exception("The selected appointment is not available or the therapist is not free at this time.");
         }
-
-        // Create a new busy appointment
         var newAppointment = new BusyAppointment
         {
             TherapistId = therapistId,
@@ -99,15 +97,13 @@ public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, T
             Time = time
         };
 
-        // Add the appointment to the busy table
         bool added = await _busyAppointment.CreateAsync(newAppointment);
         if (!added)
         {
             throw new Exception("Failed to create the appointment.");
         }
 
-        // Remove the appointment from the available table using its ID
-        bool removed = await _busyAppointment.DeleteAsync(appointmentToRemove.Code.ToString()); // Pass the ID (string)
+        bool removed = await _emptyAppointment.DeleteAsync(appointmentToScedule.Code.ToString());
         if (!removed)
         {
             throw new Exception("Failed to remove the appointment from available slots.");
@@ -115,5 +111,46 @@ public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, T
 
         return true;
     }
+    //ביטול תור
+    public async Task<bool> CancelAppointment(int appointmentId, string clientId)
+    {
+        var busyAppointments = await _busyAppointment.ReadAllAsync();
+        var appointmentToRemove = busyAppointments.FirstOrDefault(a =>
+            a.Code == appointmentId &&
+            a.ClientId.Equals(clientId, StringComparison.OrdinalIgnoreCase));
+
+
+        if (appointmentToRemove == null)
+        {
+            throw new Exception("The selected appointment does not exist.");
+        }
+
+        var newAppointment = new EmptyAppointment
+        {
+            Code = appointmentId,
+            TherapistId = appointmentToRemove.TherapistId,
+            Date = appointmentToRemove.Date,
+            Time = appointmentToRemove.Time
+
+        };
+
+        bool added = await _emptyAppointment.CreateAsync(newAppointment);
+        if (!added)
+        {
+            throw new Exception("Failed to move the appointment to the empty table.");
+        }
+
+        bool removed = await _busyAppointment.DeleteAsync(appointmentToRemove.Code.ToString());
+        if (!removed)
+        {
+            throw new Exception("Failed to remove the appointment from the busy table.");
+        }
+
+        return true;
+    }
 }
+
+
+
+
 
