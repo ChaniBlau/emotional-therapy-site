@@ -41,7 +41,7 @@ public class ClientService : IClient
         }
         await _databaseManager.Clients.Where(x => x.Id == id).ExecuteDeleteAsync();
         var result = await _databaseManager.SaveChangesAsync();
-        return result > 0;
+        return true;
     }
 
     public async Task<IEnumerable<Client>> ReadAllAsync() => await _databaseManager.Clients.ToListAsync();

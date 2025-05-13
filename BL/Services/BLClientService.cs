@@ -81,7 +81,8 @@ public class BLClientService : IBLClient
     {
         var emptyAppointments = await _emptyAppointment.ReadAllAsync();
         var appointmentToScedule = emptyAppointments.FirstOrDefault(a =>
-            a.TherapistId.Equals(therapistId, StringComparison.OrdinalIgnoreCase) &&
+            a.TherapistId.Trim().Equals(therapistId.Trim(), StringComparison.OrdinalIgnoreCase)
+            &&
             a.Date == date &&
             a.Time == time);
 
@@ -111,14 +112,13 @@ public class BLClientService : IBLClient
 
         return true;
     }
-    //ביטול תור
+
     public async Task<bool> CancelAppointment(int appointmentId, string clientId)
     {
         var busyAppointments = await _busyAppointment.ReadAllAsync();
         var appointmentToRemove = busyAppointments.FirstOrDefault(a =>
             a.Code == appointmentId &&
-            a.ClientId.Equals(clientId, StringComparison.OrdinalIgnoreCase));
-
+            a.ClientId.Trim().Equals(clientId.Trim(), StringComparison.OrdinalIgnoreCase));
 
         if (appointmentToRemove == null)
         {
@@ -127,11 +127,9 @@ public class BLClientService : IBLClient
 
         var newAppointment = new EmptyAppointment
         {
-            Code = appointmentId,
             TherapistId = appointmentToRemove.TherapistId,
             Date = appointmentToRemove.Date,
             Time = appointmentToRemove.Time
-
         };
 
         bool added = await _emptyAppointment.CreateAsync(newAppointment);
@@ -148,6 +146,7 @@ public class BLClientService : IBLClient
 
         return true;
     }
+
 }
 
 

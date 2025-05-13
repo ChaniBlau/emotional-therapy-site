@@ -88,18 +88,20 @@ public class AppointmentsController : ControllerBase
     //}
 
     //Scedule appointment
+    [HttpPost]
+    public async Task<ActionResult<bool>> SceduleAppointment([FromQuery] string therapistId, [FromQuery] DateOnly date, [FromQuery] TimeOnly time, [FromQuery] string clientId)
+    {
+        var result = await _blClient.ScheduleAppointment(therapistId, date, time, clientId);
+        return Ok(result);
+    }
 
-    //public async Task<ActionResult<bool>> SceduleAppointment([FromQuery] string therapistId, [FromQuery] DateOnly date, [FromQuery] TimeOnly time, [FromQuery] string clientId)
-    //{
-    //    var result = await _blClient.ScheduleAppointment(therapistId, date, time, clientId);
-    //    return Ok(result);
-    //}
+
 
     //Cancle appointment
-    [HttpDelete]
-   public async Task<ActionResult<bool>> CancleAppointment([FromQuery] int code, [FromQuery] string clientId)
-   {
-       var result = await _blClient.CancelAppointment(code, clientId);
-       return Ok(result);
-   }
+    //[HttpDelete]
+    //public async Task<ActionResult<bool>> DeleteAppointment([FromQuery] int code, [FromQuery] string clientId)
+    //{
+    //    var result = await _blClient.CancelAppointment(code, clientId);
+    //    return Ok(result);
+    //}
 }

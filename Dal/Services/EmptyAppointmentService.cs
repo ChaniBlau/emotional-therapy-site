@@ -20,7 +20,7 @@ public class EmptyAppointmentService : IEmptyAppointment
     {
         await _databaseManager.EmptyAppointments.AddAsync(entity);
         var result = await _databaseManager.SaveChangesAsync();
-        return result > 0;
+        return true;
         
     }
 
@@ -32,7 +32,7 @@ public class EmptyAppointmentService : IEmptyAppointment
         }
         await _databaseManager.EmptyAppointments.Where(x => x.Code == int.Parse(id)).ExecuteDeleteAsync();
         var result = await _databaseManager.SaveChangesAsync();
-        return result > 0;
+        return true;
 
     }
 
