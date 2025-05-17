@@ -78,7 +78,7 @@ public class BLClientService : IBLClient
     }
 public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId)
     {
-        // Check therapist availability
+       
         var availableAppointments = await _busyAppointment.ReadAllAsync();
         var appointmentToRemove = availableAppointments.FirstOrDefault(a =>
             a.TherapistId.Equals(therapistId, StringComparison.OrdinalIgnoreCase) &&
@@ -99,14 +99,14 @@ public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, T
             Time = time
         };
 
-        // Add the appointment to the busy table
+        
         bool added = await _busyAppointment.CreateAsync(newAppointment);
         if (!added)
         {
             throw new Exception("Failed to create the appointment.");
         }
 
-        // Remove the appointment from the available table using its ID
+       
         bool removed = await _busyAppointment.DeleteAsync(appointmentToRemove.Code.ToString()); // Pass the ID (string)
         if (!removed)
         {
