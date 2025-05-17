@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Dal.Models;
 
@@ -14,7 +15,7 @@ public partial class BusyAppointment
     public string TherapistId { get; set; } = null!;
 
     public string ClientId { get; set; } = null!;
-
+   
     public virtual Client Client { get; set; } = null!;
 
     public virtual Therapist Therapist { get; set; } = null!;

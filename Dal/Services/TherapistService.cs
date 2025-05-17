@@ -31,7 +31,7 @@ namespace Dal.Services
             }
             await _databaseManager.Therapists.Where(x => x.Id == id).ExecuteDeleteAsync();
             var result = await _databaseManager.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
 
         public async Task<IEnumerable<Therapist>> ReadAllAsync() => await _databaseManager.Therapists.ToListAsync();

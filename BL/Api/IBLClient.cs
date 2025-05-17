@@ -12,6 +12,8 @@ public interface IBLClient
 {
     Task<bool> CreateNewClient(Client client);
     Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForClient(string id, string name);
+    Task<bool> CancelAppointment(int appointmentId, string clientId);
+    Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId);
 }
 
 

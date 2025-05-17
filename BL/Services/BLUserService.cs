@@ -32,7 +32,7 @@ public class BLUserService : IBLUser
 
 
     }
-    public async Task<List<BusyAppointmentForUser>> LogInSpecificUser(string name, string id)
+    public async Task<List<BusyAppointmentForUser>> LogInSpecificUser(string id, string name)
     {
         var busyAppointments = await _busyAppointment.ReadAllAsync();
 

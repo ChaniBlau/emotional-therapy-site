@@ -27,7 +27,7 @@ namespace Dal.Services
         {
             await _databaseManager.BusyAppointments.Where(x => x.Code == int.Parse(id)).ExecuteDeleteAsync();
             var result = await _databaseManager.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
 
         public async Task<IEnumerable<BusyAppointment>> ReadAllAsync() => await _databaseManager.BusyAppointments.ToListAsync();
