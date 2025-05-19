@@ -1,0 +1,131 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|d:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\bl\\services\\blclientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|solutionrelative:bl\\services\\blclientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|d:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\bl\\services\\bltherapistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|solutionrelative:bl\\services\\bltherapistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|d:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\bl\\services\\bluserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2275125A-04B2-4110-A1F6-F6F9922225C8}|BL\\BL.csproj|solutionrelative:bl\\services\\bluserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283A8084-5201-4DC2-AD7D-68D7E1E29050}|Server\\Server.csproj|d:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\server\\controllers\\appointmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283A8084-5201-4DC2-AD7D-68D7E1E29050}|Server\\Server.csproj|solutionrelative:server\\controllers\\appointmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283A8084-5201-4DC2-AD7D-68D7E1E29050}|Server\\Server.csproj|d:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283A8084-5201-4DC2-AD7D-68D7E1E29050}|Server\\Server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/D__\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8_\u05DE\u05E2\u05D5\u05D3\u05DB\u05DF_PROJECT_FULLSTACK_DAL_DATABASE_DATABASE.MDF/True/SqlTable/dbo.BusyAppointments.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/D__\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8_\u05DE\u05E2\u05D5\u05D3\u05DB\u05DF_PROJECT_FULLSTACK_DAL_DATABASE_DATABASE.MDF/True/SqlTable/dbo.Clients.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "dbo.BusyAppointments [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/D__\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8_\u05DE\u05E2\u05D5\u05D3\u05DB\u05DF_PROJECT_FULLSTACK_DAL_DATABASE_DATABASE.MDF/True/SqlTable/dbo.BusyAppointments.sql",
+              "ToolTip": "dbo.BusyAppointments [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-05-19T20:45:33.732Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "dbo.Clients [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/D__\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8_\u05DE\u05E2\u05D5\u05D3\u05DB\u05DF_PROJECT_FULLSTACK_DAL_DATABASE_DATABASE.MDF/True/SqlTable/dbo.Clients.sql",
+              "ToolTip": "dbo.Clients [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-05-19T20:45:26.363Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppointmentsController.cs",
+              "DocumentMoniker": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\Server\\Controllers\\AppointmentsController.cs",
+              "RelativeDocumentMoniker": "Server\\Controllers\\AppointmentsController.cs",
+              "ToolTip": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\Server\\Controllers\\AppointmentsController.cs",
+              "RelativeToolTip": "Server\\Controllers\\AppointmentsController.cs",
+              "ViewState": "AgIAADoAAAAAAAAAAAAnwEgAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-19T20:38:04.976Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BLClientService.cs",
+              "DocumentMoniker": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLClientService.cs",
+              "RelativeDocumentMoniker": "BL\\Services\\BLClientService.cs",
+              "ToolTip": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLClientService.cs",
+              "RelativeToolTip": "BL\\Services\\BLClientService.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAADwv00AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-19T20:35:03.802Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BLTherapistService.cs",
+              "DocumentMoniker": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLTherapistService.cs",
+              "RelativeDocumentMoniker": "BL\\Services\\BLTherapistService.cs",
+              "ToolTip": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLTherapistService.cs",
+              "RelativeToolTip": "BL\\Services\\BLTherapistService.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAYwC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-19T20:34:49.668Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BLUserService.cs",
+              "DocumentMoniker": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLUserService.cs",
+              "RelativeDocumentMoniker": "BL\\Services\\BLUserService.cs",
+              "ToolTip": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\BL\\Services\\BLUserService.cs",
+              "RelativeToolTip": "BL\\Services\\BLUserService.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAADwvzMAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-19T20:34:41.449Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\Server\\Program.cs",
+              "RelativeDocumentMoniker": "Server\\Program.cs",
+              "ToolTip": "D:\\\u05E4\u05E8\u05D5\u05D9\u05E7\u05D8 \u05D4\u05DB\u05D9 \u05DE\u05E2\u05D5\u05D3\u05DB\u05DF\\emotional-therapy-site\\Server\\Program.cs",
+              "RelativeToolTip": "Server\\Program.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-19T19:40:35.659Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

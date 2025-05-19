@@ -1,0 +1,92 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+nav {
+  background-color: #282c34;
+  /* Dark background */
+  padding: 10px 20px;
+  /* Spacing inside nav */
+  display: flex;
+  /* Arrange links horizontally */
+  justify-content: center;
+  /* Center align the links */
+  gap: 20px;
+  /* Spacing between links */
+  width: 100%;
+  position: fixed; /* Fix the nav to the top */
+  top: 0; 
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Style for the links */
+nav a {
+  text-decoration: none;
+  /* Remove underline from links */
+  color: white;
+  /* White text for better contrast */
+  font-size: 23px;
+  /* Make text slightly larger */
+  transition: color 0.3s ease;
+  margin-right: 40px;
+  margin-left: 40px;
+  /* Smooth color change on hover */
+}
+
+/* Hover effect for links */
+nav a:hover {
+  color: #61dafb;
+  /* React's brand blue */
+}
+
+/* Add active state styling if needed */
+nav a.active {
+  font-weight: bold;
+  color: #61dafb;
+  /* Highlight active link */
+}
+
+#navDiv{
+  padding-bottom: 50px;
+}
