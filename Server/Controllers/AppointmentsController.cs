@@ -45,15 +45,15 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     //Get all clients
 
-    //public async Task<ActionResult<List<Client>>> GetAllClients()
-    //{
-    //    var result = await clients.ReadAllAsync();
-    //    if (result == null)
-    //    {
-    //        return NotFound();
-    //    }
-    //    return Ok(result);
-    //}
+    public async Task<ActionResult<List<Client>>> GetAllClients()
+    {
+        var result = await clients.ReadAllAsync();
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 
     //Get all therapists
 
