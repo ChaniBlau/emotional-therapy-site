@@ -42,51 +42,64 @@
 }
 
 nav {
-  background-color: #282c34;
-  /* Dark background */
-  padding: 10px 20px;
-  /* Spacing inside nav */
+  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 50%, #d4a1fd 100%);
+  padding: 14px 80px; /* רווח גדול יותר בצדדים */
   display: flex;
-  /* Arrange links horizontally */
   justify-content: center;
-  /* Center align the links */
-  gap: 20px;
-  /* Spacing between links */
+  align-items: center;
   width: 100%;
-  position: fixed; /* Fix the nav to the top */
-  top: 0; 
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  box-shadow: 0 2px 12px 0 rgba(162, 120, 255, 0.10);
+  border-bottom: 2px solid #e0c3fc;
 }
 
-/* Style for the links */
 nav a {
   text-decoration: none;
-  /* Remove underline from links */
-  color: white;
-  /* White text for better contrast */
-  font-size: 23px;
-  /* Make text slightly larger */
-  transition: color 0.3s ease;
-  margin-right: 40px;
-  margin-left: 40px;
-  /* Smooth color change on hover */
+  color: #039be5; /* תכלת כהה */
+  font-size: 22px;
+  font-weight: 500;
+  padding: 0 14px;
+  margin: 0 24px;  /* רווח גדול בין קישורים */
+  letter-spacing: 0; /* אין ריווח בין אותיות */
+  transition: 
+    color 0.3s,
+    background 0.3s,
+    box-shadow 0.3s;
+  position: relative;
+  background: transparent;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-width: 0;
 }
 
-/* Hover effect for links */
-nav a:hover {
-  color: #61dafb;
-  /* React's brand blue */
+nav a:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: -18px; /* הפס יוצא החוצה וממוקם באמצע בין הקישורים */
+  width: 2px;
+  height: 28px;
+  background: linear-gradient(180deg, #512da8 0%, #1976d2 100%); /* כהה יותר */
+  border-radius: 2px;
+  opacity: 0.85;
+  z-index: 2;
+  pointer-events: none;
 }
 
-/* Add active state styling if needed */
-nav a.active {
+nav a:hover, nav a.active {
+  color: #039be5;
+  background: rgba(129, 212, 250, 0.10); /* רקע תכלת עדין */
   font-weight: bold;
-  color: #61dafb;
-  /* Highlight active link */
+  box-shadow: none;
+  text-decoration: none;
 }
-
-#navDiv{
-  padding-bottom: 50px;
+#navDiv {
+  padding-bottom: 60px;
 }

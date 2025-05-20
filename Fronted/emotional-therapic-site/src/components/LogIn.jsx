@@ -24,13 +24,8 @@ const LogIn = () => {
 
       if (loginUser.fulfilled.match(resultAction)) {
         const user = resultAction.payload[0];
-        const isTherapist = user.Email !== undefined;
-        const userRole = isTherapist ? 'therapist' : 'client';
-
-        // localStorage.setItem("userId", user.Id);
-        // localStorage.setItem("userName", user.Name);
-
-        navigate(userRole === 'therapist' ? '/therapist-dashboard' : '/client-dashboard');
+        const isTherapist = user.role === "Therapist";
+        navigate(isTherapist ? '/therapist-dashboard' : '/client-dashboard');
       } else {
         setError(resultAction.payload || "error in login");
       }

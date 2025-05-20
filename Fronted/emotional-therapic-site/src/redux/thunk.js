@@ -23,3 +23,23 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const signUpClient = createAsyncThunk(
+  'client/signUpClient',
+  async (clientData, { rejectWithValue }) => {
+    try {
+      const response = await fetch('http://localhost:5222/api/Client/CreateNewClient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clientData),
+      });
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);

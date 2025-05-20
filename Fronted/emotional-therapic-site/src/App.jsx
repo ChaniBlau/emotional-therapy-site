@@ -14,9 +14,9 @@ function App() {
           <BrowserRouter>
         <div id='navDiv'>
           <nav>
-              <NavLink to="/"  activeclassname="active">Home</NavLink> |{' '}
-              <NavLink to="/about"  activeclassname="active">About</NavLink> |{' '}
-              <NavLink to="/login"  activeclassname="active">Log In</NavLink> |{' '}
+              <NavLink to="/"  activeclassname="active">Home</NavLink>
+              <NavLink to="/about"  activeclassname="active">About</NavLink> 
+              <NavLink to="/login"  activeclassname="active">Log In</NavLink>
               <NavLink to="/signin"  activeclassname="active">Sign In</NavLink>
              
 

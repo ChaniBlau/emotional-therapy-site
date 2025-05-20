@@ -70,6 +70,7 @@ public class BLClientService : IBLClient
 
            return new BusyAppointmentForUser
            {
+               Role = "Client",
                Date = appointmentDateTime,
                Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName
            };

@@ -18,6 +18,8 @@ function ClientDashboard() {
         <p>No appointments found</p>
       )}
     </div>
+    
   );
 }
 export default ClientDashboard;
+

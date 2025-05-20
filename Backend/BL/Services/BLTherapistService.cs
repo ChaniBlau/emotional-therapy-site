@@ -37,6 +37,7 @@ public class BLTherapistService : IBLTherapist
                     DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
                     return new BusyAppointmentForUser
                     {
+                        Role = "Therapist",
                         Id = clientForDetails?.Id,
                         Date = appointmentDateTime,
                         Name = clientForDetails.FirstName + " " + clientForDetails.LastName,
