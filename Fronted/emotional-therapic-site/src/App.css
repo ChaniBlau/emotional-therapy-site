@@ -103,3 +103,13 @@ nav a:hover, nav a.active {
 #navDiv {
   padding-bottom: 60px;
 }
+/* Add this to App.css */
+body {
+  background-image: url('/src/assets/chat.jpeg'); /* Replace with your image path */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+
+}
+
