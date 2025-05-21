@@ -19,7 +19,7 @@ public partial class Client
 
     public string? PhoneNumber { get; set; }
 
-    public string TherapistId { get; set; } = null!;
+    public string? TherapistId { get; set; } 
 
     public virtual ICollection<BusyAppointment> BusyAppointments { get; set; } = new List<BusyAppointment>();
 }

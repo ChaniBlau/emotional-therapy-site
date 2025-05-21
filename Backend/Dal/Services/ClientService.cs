@@ -18,7 +18,7 @@ public class ClientService : IClient
     }
     public async Task<bool> CreateAsync(Client entity)
     {
-        bool isExists = await _databaseManager.Clients.AnyAsync(x => x.Id == entity.Id);
+        bool isExists = await _databaseManager.Clients.AnyAsync(x => x.Email == entity.Email);
         if (isExists)
         {
             throw new ArgumentException("Client already exists");
@@ -27,7 +27,7 @@ public class ClientService : IClient
         {
             await _databaseManager.Clients.AddAsync(entity);
             var result = await _databaseManager.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
     }
 
