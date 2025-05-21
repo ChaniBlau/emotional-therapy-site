@@ -31,26 +31,37 @@ public class BLClientService : IBLClient
             throw new ArgumentNullException(nameof(client), "Client cannot be null");
 
         if (string.IsNullOrWhiteSpace(client.FirstName) || string.IsNullOrWhiteSpace(client.LastName))
-            throw new ArgumentException("Client name cannot be empty", nameof(client.FirstName));
+            throw new ArgumentException("Client name cannot be empty");
 
         if (string.IsNullOrWhiteSpace(client.PhoneNumber))
-            throw new ArgumentException("Phone number cannot be empty", nameof(client.PhoneNumber));
+            throw new ArgumentException("Phone number cannot be empty");
 
         if (client.YearOfBirth < 1900 || client.YearOfBirth > DateTime.Now.Year)
-            throw new ArgumentException("Year of birth is invalid", nameof(client.YearOfBirth));
+            throw new ArgumentException("Year of birth is invalid");
 
+        if (!string.IsNullOrWhiteSpace(client.Email))
+        {
+            try
+            {
+                var mailAddress = new System.Net.Mail.MailAddress(client.Email);
+            }
+            catch
+            {
+                throw new ArgumentException("Invalid email format");
+            }
+        }
 
         try
         {
-            var mailAddress = new System.Net.Mail.MailAddress(client.Email);
+            return await _clients.CreateAsync(client);
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException("Invalid email", nameof(client.Email));
+            // ניתן ללוג שגיאה ולזרוק שגיאה מותאמת
+            throw new Exception("Failed to create client", ex);
         }
-        return await _clients.CreateAsync(client);
-
     }
+
 
     public async Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForClient(string id, string name)
     {

@@ -18,18 +18,31 @@ public class ClientService : IClient
     }
     public async Task<bool> CreateAsync(Client entity)
     {
-        bool isExists = await _databaseManager.Clients.AnyAsync(x => x.Email == entity.Email);
-        if (isExists)
+        try
         {
-            throw new ArgumentException("Client already exists");
-        }
-        else
-        {
+            if (!string.IsNullOrWhiteSpace(entity.Email))
+            {
+                bool isExists = await _databaseManager.Clients.AnyAsync(x => x.Email == entity.Email);
+                if (isExists)
+                    throw new ArgumentException("Client already exists with this email");
+            }
+
             await _databaseManager.Clients.AddAsync(entity);
-            var result = await _databaseManager.SaveChangesAsync();
+            await _databaseManager.SaveChangesAsync();
             return true;
         }
+        catch (DbUpdateException ex)
+        {
+            
+            throw new Exception("Database error while creating client", ex);
+        }
+        catch (Exception ex)
+        {
+            
+            throw new Exception("Unexpected error while creating client", ex);
+        }
     }
+
 
 
     //we don't need really to use this func cause in a real site the clients became inactive

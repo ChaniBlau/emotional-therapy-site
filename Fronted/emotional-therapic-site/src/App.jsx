@@ -17,7 +17,7 @@ function App() {
               <NavLink to="/"  activeclassname="active">Home</NavLink>
               <NavLink to="/about"  activeclassname="active">About</NavLink> 
               <NavLink to="/login"  activeclassname="active">Log In</NavLink>
-              <NavLink to="/signin"  activeclassname="active">Sign In</NavLink>
+              <NavLink to="/signup"  activeclassname="active">Sign Up</NavLink>
              
 
           </nav>
@@ -26,7 +26,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About/>} />
           <Route path='/login' element={<LogIn />} />
-          <Route path='/signin' element={<SignUp />} />
+          <Route path='/signup' element={<SignUp />} />
           <Route path="/client-dashboard" element={<ClientDashboard />} />
           <Route path="/therapist-dashboard" element={<TherapistDashboard />} />  
         </Routes>

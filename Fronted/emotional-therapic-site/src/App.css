@@ -102,14 +102,14 @@ nav a:hover, nav a.active {
 }
 #navDiv {
   padding-bottom: 60px;
+  opacity: 0.6;
 }
 /* Add this to App.css */
 body {
-  background-image: url('/src/assets/chat.jpeg'); /* Replace with your image path */
-  background-size: cover;
+  background-image: url('/src/assets/May\ 22\,\ 2025\,\ 01_27_19\ AM.png'); 
+  background-size:  cover; 
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
-
 }
 

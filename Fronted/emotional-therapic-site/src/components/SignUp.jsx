@@ -8,12 +8,13 @@ const SignUp = () => {
   const { loading, error } = useSelector((state) => state.client);
 
   const [form, setForm] = useState({
-    id: '', // הוסף שדה ID
+    id: '', 
     firstName: '',
     lastName: '',
     phoneNumber: '',
     yearOfBirth: '',
     email: '',
+    city: '', // הוסף את שדה ה-city
   });
 
   const handleChange = (e) => {
@@ -23,24 +24,20 @@ const SignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const clientData = {
-      Id: form.id.trim() || crypto.randomUUID(), // השתמש ב-ID מהטופס או צור חדש
+      Id: form.id.trim() || crypto.randomUUID(),
       FirstName: form.firstName.trim(),
       LastName: form.lastName.trim(),
       PhoneNumber: form.phoneNumber.trim(),
       YearOfBirth: parseInt(form.yearOfBirth, 10),
       Email: form.email.trim(),
-      // TherapistId: "",
-      City: "",
+      TherapistId: "",
+      City: form.city.trim(), // הוסף את שדה ה-city
     };
     console.log(clientData);
     dispatch(signUpClient(clientData));
   };
 
   return (
-    <Box
-      className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: '100vh', background: '#f2f6fc' }}
-    >
       <Paper elevation={4} sx={{ p: 4, width: 350, borderRadius: 3 }}>
         <Typography variant="h4" align="center" color="primary" gutterBottom>
           Sign Up
@@ -110,6 +107,16 @@ const SignUp = () => {
             margin="normal"
             required
           />
+          <TextField
+            name="city"
+            label="City"
+            variant="outlined"
+            value={form.city}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
           <Button
             type="submit"
             variant="contained"
@@ -127,7 +134,6 @@ const SignUp = () => {
           )}
         </form>
       </Paper>
-    </Box>
   );
 };
 
