@@ -6,7 +6,7 @@ import SignUp from './components/SignUp'
 import About from './components/About'
 import ClientDashboard from './components/ClientDashboard'
 import TherapistDashboard from './components/TherapistDashboard'
-
+import UserProfileMenu from './components/UserProfileMenu'; 
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
               <NavLink to="/about"  activeclassname="active">About</NavLink> 
               <NavLink to="/login"  activeclassname="active">Log In</NavLink>
               <NavLink to="/signup"  activeclassname="active">Sign Up</NavLink>
-             
+              <UserProfileMenu />
 
           </nav>
         </div>

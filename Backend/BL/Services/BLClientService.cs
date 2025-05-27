@@ -67,6 +67,8 @@ public class BLClientService : IBLClient
     {
         var busyAppointments = await _busyAppointment.ReadAllAsync();
         var therapists = await _therapist.ReadAllAsync();
+        var clients = await _clients.ReadAllAsync(); 
+
         if (busyAppointments == null)
         {
             return new List<BusyAppointmentForUser>();
@@ -77,13 +79,16 @@ public class BLClientService : IBLClient
        .Select(appointment =>
        {
            var therapistForDetails = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId));
+           var clientForDetails = clients.FirstOrDefault(c => c.Id.Trim().Equals(appointment.ClientId.Trim(), StringComparison.OrdinalIgnoreCase));
            DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
 
            return new BusyAppointmentForUser
            {
+               Id = appointment.Code.ToString(),
                Role = "Client",
                Date = appointmentDateTime,
-               Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName
+               Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName,
+               ClientName = clientForDetails!= null ? clientForDetails.FirstName + " " + clientForDetails.LastName : ""
            };
        })
        .ToList();

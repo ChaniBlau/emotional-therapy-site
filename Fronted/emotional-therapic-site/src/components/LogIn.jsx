@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../redux/thunk';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-} from '@mui/material';
+import { Box, Paper, TextField, Button, Typography, Alert,} from '@mui/material';
 
 const LogIn = () => {
   const [id, setId] = useState('');

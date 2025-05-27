@@ -3,20 +3,22 @@ import { createSlice } from '@reduxjs/toolkit';
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    userInfo: null,  // יכיל את פרטי המשתמש
-    token: null,     // טוקן לאימות
-    role: null,      // "client" או "therapist"
+    userInfo: null,  
+    token: null,     
+    role: null,      
     loading: false,
     error: null,
   },
   reducers: {
-    setUser: (state, action) => {
-      const { userInfo, token, role } = action.payload;
-      state.userInfo = userInfo;
-      state.token = token;
-      state.role = role;
-      state.error = null;
-    },
+   setUser: (state, action) => {
+  state.userInfo = {
+    id: action.payload.id,
+    name: action.payload.name,
+  };
+  state.role = action.payload.role;
+  state.token = action.payload.token || null;
+  state.error = null;
+},
     clearUser: (state) => {
       state.userInfo = null;
       state.token = null;

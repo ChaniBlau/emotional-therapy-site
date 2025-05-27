@@ -1,0 +1,2 @@
+﻿ALTER TABLE Clients
+ALTER COLUMN TherapistId NVARCHAR(255) NULL;

@@ -196,14 +196,38 @@ public class AppointmentsController : ControllerBase
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex); // או לוג אחר
             return StatusCode(500, $"An error occurred: {ex.Message}");
         }
     }
+
+
 
     [HttpPost("ScheduleAppointment")]
     public async Task<ActionResult<bool>> ScheduleAppointment([FromQuery] string therapistId, [FromQuery] DateOnly date, [FromQuery] TimeOnly time, [FromQuery] string clientId)
     {
         var result = await _blClient.ScheduleAppointment(therapistId, date, time, clientId);
         return Ok(result);
+    }
+
+    [HttpDelete("CancelAppointment")]
+    public async Task<ActionResult<bool>> CancelAppointment([FromQuery] int appointmentId, [FromQuery] string clientId)
+    {
+        try
+        {
+            var result = await _blClient.CancelAppointment(appointmentId, clientId);
+            if (result)
+            {
+                return Ok(true);
+            }
+            else
+            {
+                return BadRequest(new { message = "Failed to cancel the appointment." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
     }
 }

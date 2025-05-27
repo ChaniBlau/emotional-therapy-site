@@ -1,4 +1,3 @@
-
 using BL;
 using BL.Api;
 using BL.Services;
@@ -8,8 +7,11 @@ using Dal.Models;
 using Dal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddSingleton<IDal, DalManager>();
 builder.Services.AddSingleton<IBL, BLManager>();
+builder.Services.AddSingleton<DatabaseManager>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost5173",
@@ -18,11 +20,11 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod());
 });
 
-builder.Services.AddSingleton<DatabaseManager>();
-
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// סדר חשוב: UseCors לפני UseAuthorization
 app.UseCors("AllowLocalhost5173");
 
 app.UseAuthorization();
