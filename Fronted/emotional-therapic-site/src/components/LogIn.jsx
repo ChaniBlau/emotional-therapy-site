@@ -3,11 +3,13 @@ import { useDispatch } from 'react-redux';
 import { loginUser } from '../redux/thunk';
 import { useNavigate } from 'react-router-dom';
 import { Box, Paper, TextField, Button, Typography, Alert,} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 const LogIn = () => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [showDialog, setShowDialog] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,19 +22,20 @@ const LogIn = () => {
       return;
     }
 
-    try {
-      const resultAction = await dispatch(loginUser({ id, name }));
+   try {
+  const resultAction = await dispatch(loginUser({ id, name }));
 
-      if (loginUser.fulfilled.match(resultAction)) {
-        const user = resultAction.payload[0];
-        const isTherapist = user.role === "Therapist";
-        navigate(isTherapist ? '/therapist-dashboard' : '/client-dashboard');
-      } else {
-        setError(resultAction.payload || "error in login");
-      }
-    } catch (err) {
-      setError("Unexpected error");
-    }
+  if (loginUser.fulfilled.match(resultAction)) {
+    const user = resultAction.payload[0];
+    const isTherapist = user.role === "Therapist";
+    navigate(isTherapist ? '/therapist-dashboard' : '/client-dashboard');
+  } else {
+    // כאן פתח את הדיאלוג במקום setError
+    setShowDialog(true);
+  }
+} catch (err) {
+  setError("Unexpected error");
+}
   };
 
   return (
@@ -75,6 +78,26 @@ const LogIn = () => {
             </Alert>
           )}
         </form>
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
+  <DialogTitle>User not found</DialogTitle>
+  <DialogContent>
+    <Typography>The user does not exist in the system. Do you want to register?</Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setShowDialog(false)} color="secondary" variant="outlined">
+      לא
+    </Button>
+    <Button
+      onClick={() => {
+        setShowDialog(false);
+        navigate('/signup');
+      }}
+      color="primary"
+      variant="contained"
+    >
+Yes, register now    </Button>
+  </DialogActions>
+</Dialog>
       </Paper>
    
   );
