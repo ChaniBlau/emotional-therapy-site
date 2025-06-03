@@ -57,7 +57,6 @@ public class BLClientService : IBLClient
         }
         catch (Exception ex)
         {
-            // ניתן ללוג שגיאה ולזרוק שגיאה מותאמת
             throw new Exception("Failed to create client", ex);
         }
     }
