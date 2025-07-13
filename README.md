@@ -1,34 +1,33 @@
 # 🧒 Emotional Therapy Site
+A Child Therapy Clinic Appointment Management System
+A dynamic appointment scheduling system with role-based permissions and an intuitive interface for patients, therapists, and admins.
 
-**אתר ניהול תורים למכון טיפולים רגשיים לילדים**  
-מאפשר ניהול תורים דינמי באמצעות הרשאות וממשק קל לשימוש – מטופלים, מטפלים ואדמין.
+## 🛠️ Technologies ##
+Frontend: React + TypeScript
 
----
+Backend: ASP.NET Core Web API (C#)
 
-## 🛠️ טכנולוגיות
+Database: SQL Server
 
-- **Frontend**: React + TypeScript  
-- **Backend**: ASP.NET Core Web API (C#)  
-- **Database**: SQL Server  
-- **DevOps & Deployment**: Docker, Docker Compose, Google Cloud Run + Cloud Storage (בהקמה)
+DevOps & Deployment: Docker, Docker Compose, Google Cloud Run + Cloud Storage (in progress)
 
----
+## ✨ Key Features ##
+👤 User Roles and Permissions: Clients, Therapists, Admin
 
-## ✨ פיצ’רים מובילים
+🗓️ Appointment Management: View, Schedule, and Cancel Appointments
 
-- 👤 **הרשאות ותפקידים**: לקוחות, מטפלים, אדמין  
-- 🗓️ **ניהול תורים**: צפייה, קביעת ביטול תור  
-- 🔍 **פילטור לפי סוג טיפול**  
-- 🔐 **אימות משתמשים** – התחברות והרשמה  
-- 🧩 **ארכיטקטורת שמיש**: DAL / BL / API לפי עקרונות SOLID  
+🔍 Treatment Filtering: Filter appointments by treatment type
 
----
+🔐 User Authentication: Login and registration functionality
 
-## 🚀 הוראת הרצה מקומית
+🧩 Solid Architecture: DAL / BL / API following SOLID principles
 
-בהנחה שיש לך .NET ו‑Node.js:
+## 🚀 Local Setup Instructions ##
+Assuming you have .NET and Node.js installed:
 
-```bash
+bash
+Copy
+Edit
 # Back-end:
 cd Server
 dotnet restore
