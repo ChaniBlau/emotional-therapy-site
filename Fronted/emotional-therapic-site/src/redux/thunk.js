@@ -1,83 +1,125 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setAppointments } from './appointmentsSlice';
-import { setUser } from './userSlice';
-
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async ({ id, name }, { dispatch, rejectWithValue }) => {
+  "user/loginUser",
+  async ({ id, name }, thunkAPI) => {
     try {
-      const response = await fetch(`http://localhost:5222/api/Appointments/GetAllBusyAppointmentsForUser?id=${id}&name=${name}`);
-      if (!response.ok) {
-        throw new Error("User not found");
-      }
-
-      const data = await response.json();
-      //console.log(data);
-      const userFromServer = data[0];
-      const isTherapist = data.length > 0 && userFromServer.Email !== undefined;
-      dispatch(setUser({
-        id: userFromServer.id,
-        name: userFromServer.clientName,
-        role: isTherapist ? "therapist" : "client"
-      }));
-      dispatch(setAppointments(data));
-
-      return data;
-    } catch (err) {
-      return rejectWithValue(err.message);
+      const response = await axios.get(
+        `http://localhost:5222/api/Appointments/GetAllBusyAppointmentsForUser?id=${id}&name=${name}`
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+export const signUpClient = createAsyncThunk(
+  "client/signUpClient",
+  async (clientData, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5222/api/Appointments/CreateNewClient`,
+        clientData
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
-export const signUpClient = createAsyncThunk(
-  'client/signUpClient',
-  async (clientData, { rejectWithValue }) => {
+export const fetchTherapists = createAsyncThunk(
+  "appointments/fetchTherapists",
+  async (_, thunkAPI) => {
     try {
-      const response = await fetch('http://localhost:5222/api/Appointments/CreateNewClient', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(clientData),
-      });
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      return rejectWithValue(err.message);
+      const response = await axios.get("http://localhost:5222/api/Therapists");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchAvailableTherapistsByDate = createAsyncThunk(
+  "appointments/fetchAvailableTherapistsByDate",
+  async (date, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5222/api/Therapists/AvailableByDate?date=${date}`
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchAvailableHours = createAsyncThunk(
+  "appointments/fetchAvailableHours",
+  async ({ therapistId, date }, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5222/api/Appointments/AvailableHours?therapistId=${therapistId}&date=${date}`
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
 export const scheduleAppointment = createAsyncThunk(
-  'appointments/scheduleAppointment',
-  async ({ therapistId, date, time, clientId }) => {
-    const response = await fetch(`/api/ScheduleAppointment?therapistId=${therapistId}&date=${date}&time=${time}&clientId=${clientId}`, {
-      method: 'POST',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to schedule appointment');
+  "appointments/scheduleAppointment",
+  async ({ therapistId, date, time, clientId }, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5222/api/Appointments/Schedule`,
+        { therapistId, date, time, clientId }
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
-    return await response.json();
+  }
+);
+export const cancelAppointment = createAsyncThunk(
+  "appointments/cancelAppointment",
+  async ({ appointmentId, clientId }, thunkAPI) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5222/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`
+      );
+      // Assuming the backend returns the cancelled appointment ID or a success message
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+export const fetchAppointments = createAsyncThunk(
+  "appointments/fetchAppointments",
+  async (clientId, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5222/api/Appointments/Client?clientId=${clientId}`
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
-export const cancelAppointment = createAsyncThunk(
-  'appointments/cancelAppointment',
-  async ({ appointmentId, clientId }, { rejectWithValue }) => {
+export const fetchTherapistAppointments = createAsyncThunk(
+  "appointments/fetchTherapistAppointments",
+  async (therapistId, thunkAPI) => {
     try {
-      const response = await fetch(`/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`,
-        { method: "DELETE" }
+      const response = await axios.get(
+        `http://localhost:5222/api/Appointments/Therapist?therapistId=${therapistId}`
       );
-      if (!response.ok)
-        throw new Error("Failed to cancel appointment");
-
-      return appointmentId;
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
-
 );

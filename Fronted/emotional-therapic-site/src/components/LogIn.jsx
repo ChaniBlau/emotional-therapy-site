@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/thunk';
+import { setUser } from '../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
-import { Box, Paper, TextField, Button, Typography, Alert, } from '@mui/material';
-import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+  Paper, TextField, Button, Typography, Alert,
+  Dialog, DialogTitle, DialogContent, DialogActions
+} from '@mui/material';
 
 const LogIn = () => {
   const [id, setId] = useState('');
@@ -13,6 +16,12 @@ const LogIn = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const role = useSelector(state => state.user.role);
+
+  useEffect(() => {
+    if (role === "therapist") navigate('/therapist-dashboard');
+    else if (role === "client") navigate('/client-dashboard');
+  }, [role]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,15 +35,17 @@ const LogIn = () => {
       const resultAction = await dispatch(loginUser({ id, name }));
 
       if (loginUser.fulfilled.match(resultAction)) {
-        const user = resultAction.payload[0];
-        const isTherapist = user.role === "Therapist";
-        navigate(isTherapist ? '/therapist-dashboard' : '/client-dashboard');
+        dispatch(setUser({
+          id,
+          name,
+          role: resultAction.payload[0]?.role?.toLowerCase() || null
+        }));
       } else {
-        // כאן פתח את הדיאלוג במקום setError
         setShowDialog(true);
       }
     } catch (err) {
-      setError("Unexpected error");
+      console.error("Login error:", err);
+      setError(err.message || "Unexpected error");
     }
   };
 
@@ -67,8 +78,8 @@ const LogIn = () => {
           type="submit"
           variant="contained"
           color="primary"
-          className="w-100 mt-3"
           sx={{ py: 1.3, fontWeight: "bold", fontSize: 17, borderRadius: 2 }}
+          fullWidth
         >
           Log in
         </Button>
@@ -78,14 +89,17 @@ const LogIn = () => {
           </Alert>
         )}
       </form>
+
       <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
         <DialogTitle>User not found</DialogTitle>
         <DialogContent>
-          <Typography>The user does not exist in the system. Do you want to register?</Typography>
+          <Typography>
+            The user does not exist in the system. Do you want to register?
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDialog(false)} color="secondary" variant="outlined">
-            לא
+            No
           </Button>
           <Button
             onClick={() => {
@@ -95,11 +109,11 @@ const LogIn = () => {
             color="primary"
             variant="contained"
           >
-            Yes, register now    </Button>
+            Yes, register now
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>
-
   );
 };
 

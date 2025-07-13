@@ -2,12 +2,7 @@
 using BL.Models;
 using Dal.Api;
 using Dal.Models;
-using Dal.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.Services;
 
@@ -16,46 +11,48 @@ public class BLUserService : IBLUser
     private readonly IClient _client;
     private readonly ITherapist _therapist;
     private readonly IBusyAppointment _busyAppointment;
+
     private readonly IBLBusyAppointment _busyAppointmentService;
     private readonly IBLClient _blClient;
     private readonly IBLTherapist _blTherapist;
 
-
-    public BLUserService(IDal dal)
+    public BLUserService(
+        IClient client,
+        ITherapist therapist,
+        IBusyAppointment busyAppointment,
+        IBLBusyAppointment busyAppointmentService,
+        IBLClient blClient,
+        IBLTherapist blTherapist)
     {
-        _client = dal.Clients;
-        _therapist = dal.Therapists;
-        _busyAppointment = dal.BusyAppointments;
-        _busyAppointmentService = new BLBusyAppointmentService(dal);
-        _blClient = new BLClientService(dal);
-        _blTherapist = new BLTherapistService(dal);
-
-
+        _client = client;
+        _therapist = therapist;
+        _busyAppointment = busyAppointment;
+        _busyAppointmentService = busyAppointmentService;
+        _blClient = blClient;
+        _blTherapist = blTherapist;
     }
+
+   
+
+
     public async Task<List<BusyAppointmentForUser>> LogInSpecificUser(string id, string name)
     {
-        var busyAppointments = await _busyAppointment.ReadAllAsync();
+        var appointments = new List<BusyAppointmentForUser>();
 
-        //bool isTherapist = busyAppointments.Any(t => t.TherapistId.Equals(id));
-        //bool isClient = busyAppointments.Any(t => t.ClientId.Equals(id));
-
-
-        bool isTherapist = busyAppointments.Any(t => t.TherapistId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase));
-        bool isClient = busyAppointments.Any(t => t.ClientId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase));
-
-        if (!isClient && !isTherapist)
+        var client = await _client.ReadByIdAsync(id);
+        if (client != null && client.FirstName == name)
         {
-            return new List<BusyAppointmentForUser>();
+            var clientAppointments = await _busyAppointmentService.GetAllAppointmentsForClient(id);
+            appointments.AddRange(clientAppointments);
         }
 
-        if (isTherapist)
+        var therapist = await _therapist.ReadByIdAsync(id);
+        if (therapist != null && therapist.FirstName == name)
         {
-            return await _blTherapist.GetBusyAppointmentsForTherapist(id, name);
+            var therapistAppointments = await _busyAppointmentService.GetAllAppointmentsForTherapist(id);
+            appointments.AddRange(therapistAppointments);
         }
-        if (isClient)
-        {
-            return await _blClient.GetBusyAppointmentsForClient(id,name);
-        }
-        else return null;
+
+        return appointments;
     }
 }

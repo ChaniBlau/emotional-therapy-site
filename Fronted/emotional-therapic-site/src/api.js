@@ -15,7 +15,7 @@ export async function createNewClient(clientData) {
 }
 
 export async function scheduleAppointment({ therapistId, date, time, clientId }) {
-  const res = await fetch(`/api/ScheduleAppointment?therapistId=${therapistId}&date=${date}&time=${time}&clientId=${clientId}`, {
+  const res = await fetch(`/api/Appointments/ScheduleAppointment?therapistId=${therapistId}&date=${date}&time=${time}&clientId=${clientId}`, {
     method: 'POST',
   });
   if (!res.ok) throw new Error('Failed to schedule appointment');
@@ -24,7 +24,7 @@ export async function scheduleAppointment({ therapistId, date, time, clientId })
 
 export async function cancelAppointment({ appointmentId, clientId }) {
   const res = await fetch(`/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`, {
-    method: "DELETE"
+    method: 'DELETE'
   });
   if (!res.ok) throw new Error("Failed to cancel appointment");
   return appointmentId;

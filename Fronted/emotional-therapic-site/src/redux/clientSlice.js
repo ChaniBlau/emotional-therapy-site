@@ -6,6 +6,7 @@ const clientSlice = createSlice({
         client: null, 
         loading: false,
         error: null,
+        success: false,
     },
     reducers: {
         setClient: (state, action) => {
@@ -22,7 +23,10 @@ const clientSlice = createSlice({
         setError: (state, action) => {
         state.error = action.payload;
         },
+        setSuccess: (state, action) => {
+  state.success = action.payload;
+}
     },
     });
     export default clientSlice.reducer;
-    export const { setClient, clearClient, setLoading, setError } = clientSlice.actions;
+    export const { setClient, clearClient, setLoading, setError, setSuccess } = clientSlice.actions;

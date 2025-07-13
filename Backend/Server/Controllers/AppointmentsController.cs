@@ -134,11 +134,12 @@
 //    //}
 //}
 
-using System.Threading.Tasks;
 using BL.Api;
 using BL.Models;
 using Dal.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Server.Controllers;
 
@@ -146,14 +147,26 @@ namespace Server.Controllers;
 [ApiController]
 public class AppointmentsController : ControllerBase
 {
-    private readonly IBLUser _blUser;
     private readonly IBLClient _blClient;
+    private readonly IBLTherapist _blTherapist;
+    private readonly IBLBusyAppointment _blBusyAppointment;
+    private readonly IBLEmptyAppointment _blEmptyAppointment;
+    private readonly IBLUser _blUser;
 
-    public AppointmentsController(IBL bL)
+    public AppointmentsController(
+        IBLClient blClient,
+        IBLTherapist blTherapist,
+        IBLBusyAppointment blBusyAppointment,
+        IBLEmptyAppointment blEmptyAppointment,
+        IBLUser blUser)
     {
-        _blUser = bL.BLUsers ?? throw new ArgumentNullException(nameof(bL.BLUsers));
-        _blClient = bL.BLClients ?? throw new ArgumentNullException(nameof(bL.BLClients));
+        _blClient = blClient;
+        _blTherapist = blTherapist;
+        _blBusyAppointment = blBusyAppointment;
+        _blEmptyAppointment = blEmptyAppointment;
+        _blUser = blUser;
     }
+
 
     //[HttpGet("GetAllClients")]
     //public async Task<ActionResult<List<Client>>> GetAllClients()
@@ -230,4 +243,75 @@ public class AppointmentsController : ControllerBase
             return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
         }
     }
+    [HttpGet("Therapists")]
+    public async Task<ActionResult<List<Therapist>>> GetAllTherapists()
+    {
+        var therapists = await _blTherapist.GetAllTherapists();
+        return Ok(therapists);
+    }
+    [HttpGet("Client/AvailableTherapistsByDate")]
+    public async Task<ActionResult<List<Therapist>>> GetAvailableTherapistsByDate([FromQuery] DateOnly date)
+    {
+        var therapists = await _blTherapist.GetAllTherapists(); // שכבר כתבת קודם
+        var allEmptyAppointments = await _blEmptyAppointment.GetAllEmptyAppointments();
+
+        var therapistIdsAvailable = allEmptyAppointments
+            .Where(a => a.Date == date)
+            .Select(a => a.TherapistId)
+            .Distinct()
+            .ToList();
+
+        var availableTherapists = therapists
+            .Where(t => therapistIdsAvailable.Contains(t.Id))
+            .ToList();
+
+        return Ok(availableTherapists);
+    }
+    [HttpGet("Therapist/BusyAppointments")]
+    public async Task<ActionResult<List<BusyAppointmentForUser>>> GetBusyAppointmentsForTherapist([FromQuery] string therapistId)
+    {
+        var result = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
+        return Ok(result);
+    }
+    [HttpGet("AvailableHours")]
+    public async Task<ActionResult<List<TimeOnly>>> GetAvailableHours([FromQuery] string therapistId, [FromQuery] DateOnly date)
+    {
+        var hours = await _blEmptyAppointment.GetAvailableHours(therapistId, date);
+        return Ok(hours);
+    }
+    [HttpGet("Debug/EmptyAppointmentColumns")]
+    public async Task<ActionResult<List<string>>> GetEmptyAppointmentColumnNames()
+    {
+        var columns = new List<string>();
+        var conn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename='C:\\Users\\User\\Desktop\\emotional-therapy-site\\Backend\\Dal\\dataBase\\dataBase.mdf';Integrated Security=True;Connect Timeout=30;Encrypt=True");
+
+        try
+        {
+            await conn.OpenAsync();
+
+            var cmd = new SqlCommand(
+                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'EmptyAppointments'",
+                conn
+            );
+
+            var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                columns.Add(reader.GetString(0));
+            }
+
+            return Ok(columns);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+    }
+
+
+
 }

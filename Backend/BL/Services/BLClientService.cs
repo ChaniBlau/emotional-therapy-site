@@ -13,17 +13,19 @@ namespace BL.Services;
 
 public class BLClientService : IBLClient
 {
-    IClient _clients;
-    IBusyAppointment _busyAppointment;
-    ITherapist _therapist;
-    IEmptyAppointment _emptyAppointment;
-    public BLClientService(IDal dal)
+    private readonly IClient _clients;
+    private readonly IBusyAppointment _busyAppointment;
+    private readonly ITherapist _therapist;
+    private readonly IEmptyAppointment _emptyAppointment;
+
+    public BLClientService(IClient clients, IBusyAppointment busyAppointment, ITherapist therapist, IEmptyAppointment emptyAppointment)
     {
-        _clients = dal.Clients;
-        _busyAppointment = dal.BusyAppointments;
-        _therapist = dal.Therapists;
-        _emptyAppointment = dal.EmptyAppointments;
+        _clients = clients;
+        _busyAppointment = busyAppointment;
+        _therapist = therapist;
+        _emptyAppointment = emptyAppointment;
     }
+
 
     public async Task<bool> CreateNewClient(Client client)
     {
@@ -62,36 +64,36 @@ public class BLClientService : IBLClient
     }
 
 
-    public async Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForClient(string id, string name)
-    {
-        var busyAppointments = await _busyAppointment.ReadAllAsync();
-        var therapists = await _therapist.ReadAllAsync();
-        var clients = await _clients.ReadAllAsync(); 
+    //public async Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForClient(string id, string name)
+    //{
+    //    var busyAppointments = await _busyAppointment.ReadAllAsync();
+    //    var therapists = await _therapist.ReadAllAsync();
+    //    var clients = await _clients.ReadAllAsync(); 
 
-        if (busyAppointments == null)
-        {
-            return new List<BusyAppointmentForUser>();
-        }
+    //    if (busyAppointments == null)
+    //    {
+    //        return new List<BusyAppointmentForUser>();
+    //    }
 
-        return busyAppointments
-       .Where(app => app.ClientId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase))
-       .Select(appointment =>
-       {
-           var therapistForDetails = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId));
-           var clientForDetails = clients.FirstOrDefault(c => c.Id.Trim().Equals(appointment.ClientId.Trim(), StringComparison.OrdinalIgnoreCase));
-           DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
+    //    return busyAppointments
+    //   .Where(app => app.ClientId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase))
+    //   .Select(appointment =>
+    //   {
+    //       var therapistForDetails = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId));
+    //       var clientForDetails = clients.FirstOrDefault(c => c.Id.Trim().Equals(appointment.ClientId.Trim(), StringComparison.OrdinalIgnoreCase));
+    //       DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
 
-           return new BusyAppointmentForUser
-           {
-               Id = appointment.Code.ToString(),
-               Role = "Client",
-               Date = appointmentDateTime,
-               Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName,
-               ClientName = clientForDetails!= null ? clientForDetails.FirstName + " " + clientForDetails.LastName : ""
-           };
-       })
-       .ToList();
-    }
+    //       return new BusyAppointmentForUser
+    //       {
+    //           Id = appointment.Code.ToString(),
+    //           Role = "Client",
+    //           Date = appointmentDateTime,
+    //           Name = therapistForDetails.FirstName + " " + therapistForDetails.LastName,
+    //           ClientName = clientForDetails!= null ? clientForDetails.FirstName + " " + clientForDetails.LastName : ""
+    //       };
+    //   })
+    //   .ToList();
+    //}
     //קביעת תור
     public async Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId)
     {
@@ -162,6 +164,7 @@ public class BLClientService : IBLClient
 
         return true;
     }
+    
 
 }
 
