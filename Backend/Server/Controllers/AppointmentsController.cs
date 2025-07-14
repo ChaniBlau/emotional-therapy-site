@@ -311,7 +311,35 @@ public class AppointmentsController : ControllerBase
             await conn.CloseAsync();
         }
     }
+    [HttpGet("LoginTherapist")]
+    public async Task<IActionResult> LoginTherapist([FromQuery] string id, [FromQuery] string name)
+    {
+        var therapist = await _blTherapist.AuthenticateTherapist(id, name);
+        if (therapist == null)
+            return NotFound();
 
+        return Ok(new
+        {
+            id = therapist.Id,
+            name = therapist.FirstName + " " + therapist.LastName,
+            role = "therapist"
+        });
+    }
+
+    [HttpGet("LoginClient")]
+    public async Task<IActionResult> LoginClient([FromQuery] string id, [FromQuery] string name)
+    {
+        var client = await _blClient.AuthenticateClient(id, name);
+        if (client == null)
+            return NotFound();
+
+        return Ok(new
+        {
+            id = client.Id,
+            name = client.FirstName + " " + client.LastName,
+            role = "client"
+        });
+    }
 
 
 }

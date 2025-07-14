@@ -164,7 +164,13 @@ public class BLClientService : IBLClient
 
         return true;
     }
-    
+    public async Task<Client?> AuthenticateClient(string id, string name)
+    {
+        var clients = await _clients.ReadAllAsync();
+        return clients.FirstOrDefault(t =>
+            t.Id.Trim() == id.Trim());
+    }
+
 
 }
 

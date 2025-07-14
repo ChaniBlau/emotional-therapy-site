@@ -1,5 +1,8 @@
 // AppointmentScheduler.jsx
 import React, { useState, useEffect } from "react";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
   Dialog,
   DialogTitle,
@@ -76,38 +79,38 @@ const AppointmentScheduler = ({ open, handleClose }) => {
     );
 
     if (scheduleAppointment.fulfilled.match(resultAction)) {
-      alert("התור נקבע בהצלחה!");
+      alert("The appointment was successfully scheduled!");
       if (role === "Client") {
         dispatch(fetchAppointments(clientId));
       }
       handleClose();
     } else {
-      alert("אירעה שגיאה בקביעת התור.");
+      alert("An error occurred while scheduling the appointment.");
     }
   };
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>קביעת תור</DialogTitle>
+      <DialogTitle>Schedule an appointment</DialogTitle>
       <DialogContent>
         <FormControl fullWidth margin="normal">
-          <InputLabel>סנן לפי</InputLabel>
+          <InputLabel>Filter by</InputLabel>
           <Select
             value={mode}
             onChange={(e) => dispatch(setMode(e.target.value))}
-            label="סנן לפי"
+            label="Filter by"
           >
-            <MenuItem value="therapist">לפי מטפל</MenuItem>
-            <MenuItem value="date">לפי תאריך</MenuItem>
+            <MenuItem value="therapist">According to therapist</MenuItem>
+            <MenuItem value="date">By date</MenuItem>
           </Select>
         </FormControl>
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>בחר מטפל</InputLabel>
+          <InputLabel>Select a therapist</InputLabel>
           <Select
             value={selectedTherapist}
             onChange={(e) => dispatch(setSelectedTherapist(e.target.value))}
-            label="בחר מטפל"
+            label="Select a therapist"
           >
             {(mode === "therapist" ? therapists : availableTherapists).map((therapist) => (
               <MenuItem key={therapist.id} value={therapist.id}>
@@ -117,22 +120,26 @@ const AppointmentScheduler = ({ open, handleClose }) => {
           </Select>
         </FormControl>
 
-        <TextField
-          fullWidth
-          margin="normal"
-          type="date"
-          label="בחר תאריך"
-          InputLabelProps={{ shrink: true }}
-          value={localDate}
-          onChange={handleDateChange}
-        />
-
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+  <DatePicker
+    label="Choose Date"
+    value={localDate}
+    onChange={(newValue) => {
+      setLocalDate(newValue);
+      dispatch(setSelectedDate(newValue));
+      if (mode === "date") {
+        dispatch(fetchAvailableTherapistsByDate(newValue));
+      }
+    }}
+    renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+  />
+</LocalizationProvider>
         <FormControl fullWidth margin="normal">
-          <InputLabel>בחר שעה</InputLabel>
+          <InputLabel>Select time</InputLabel>
           <Select
             value={selectedTime}
             onChange={(e) => dispatch(setSelectedTime(e.target.value))}
-            label="בחר שעה"
+            label="Choose a time"
           >
             {availableHours.map((time, index) => (
               <MenuItem key={index} value={time}>
@@ -144,9 +151,9 @@ const AppointmentScheduler = ({ open, handleClose }) => {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose}>ביטול</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSchedule} variant="contained" color="primary">
-          קבע תור
+         Make an appointment
         </Button>
       </DialogActions>
     </Dialog>

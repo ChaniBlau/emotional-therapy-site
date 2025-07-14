@@ -13,6 +13,34 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+export const loginClient = createAsyncThunk(
+  "user/loginClient",
+  async ({ id, name }, thunkAPI) => {
+    try {
+      const res = await axios.get(`http://localhost:5222/api/Appointments/LoginClient`, {
+        params: { id, name }
+      });
+      return res.data; // { id, name, role }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
+    }
+  }
+);
+
+export const loginTherapist = createAsyncThunk(
+  "user/loginTherapist",
+  async ({ id, name }, thunkAPI) => {
+    try {
+      const res = await axios.get(`http://localhost:5222/api/Appointments/LoginTherapist`, {
+        params: { id, name }
+      });
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
+    }
+  }
+);
+
 export const signUpClient = createAsyncThunk(
   "client/signUpClient",
   async (clientData, thunkAPI) => {
@@ -45,7 +73,8 @@ export const fetchAvailableTherapistsByDate = createAsyncThunk(
   async (date, thunkAPI) => {
     try {
       const response = await axios.get(
-        `http://localhost:5222/api/Therapists/AvailableByDate?date=${date}`
+        `http://localhost:5222/api/Appointments/Client/AvailableTherapistsByDate?date=${date}
+`
       );
       return response.data;
     } catch (error) {

@@ -14,6 +14,8 @@ public interface IBLClient
     //Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForClient(string id, string name);
     Task<bool> CancelAppointment(int appointmentId, string clientId);
     Task<bool> ScheduleAppointment(string therapistId, DateOnly date, TimeOnly time, string clientId);
+    Task<Client?> AuthenticateClient(string id, string name);
+
 
 }
 

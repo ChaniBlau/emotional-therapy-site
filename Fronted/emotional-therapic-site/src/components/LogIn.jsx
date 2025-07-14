@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/thunk';
+import { loginClient, loginTherapist } from '../redux/thunk';
+
 import { setUser } from '../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -19,35 +21,47 @@ const LogIn = () => {
   const role = useSelector(state => state.user.role);
 
   useEffect(() => {
+    
     if (role === "therapist") navigate('/therapist-dashboard');
     else if (role === "client") navigate('/client-dashboard');
   }, [role]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!id.trim() || !name.trim()) {
-      setError("Please fill in all fields");
+  if (!id.trim() || !name.trim()) {
+    setError("Please fill in all fields");
+    return;
+  }
+
+  try {
+    // ננסה להתחבר כקליינט
+    let resultAction = await dispatch(loginClient({ id, name }));
+
+    if (loginClient.fulfilled.match(resultAction)) {
+      dispatch(setUser(resultAction.payload));
+      navigate('/client-dashboard');
       return;
     }
 
-    try {
-      const resultAction = await dispatch(loginUser({ id, name }));
-
-      if (loginUser.fulfilled.match(resultAction)) {
-        dispatch(setUser({
-          id,
-          name,
-          role: resultAction.payload[0]?.role?.toLowerCase() || null
-        }));
-      } else {
-        setShowDialog(true);
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.message || "Unexpected error");
+    // אם זה נכשל – ננסה כתרפיסט
+    resultAction = await dispatch(loginTherapist({ id, name }));
+    if (loginTherapist.fulfilled.match(resultAction)) {
+      dispatch(setUser(resultAction.payload));
+      navigate('/therapist-dashboard');
+      return;
     }
-  };
+
+    // אם גם זה נכשל – הצג דיאלוג
+    setShowDialog(true);
+
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(err.message || "Unexpected error");
+  }
+};
+
 
   return (
     <Paper elevation={4} sx={{ p: 4, width: 350, borderRadius: 3 }}>

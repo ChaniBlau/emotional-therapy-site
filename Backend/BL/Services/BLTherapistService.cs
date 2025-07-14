@@ -59,6 +59,12 @@ public class BLTherapistService : IBLTherapist
         var result = await _blTherapist.ReadAllAsync();
         return result.ToList();
     }
+    public async Task<Therapist?> AuthenticateTherapist(string id, string name)
+    {
+        var therapists = await _therapist.ReadAllAsync();
+        return therapists.FirstOrDefault(t =>
+            t.Id.Trim() == id.Trim() );
+    }
 
 
 }

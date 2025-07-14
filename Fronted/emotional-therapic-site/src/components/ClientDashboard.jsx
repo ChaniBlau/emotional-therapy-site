@@ -1,13 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { cancelAppointment } from '../redux/thunk';
-import {
-  setError,
-  setSuccess,
-  clearStatus
-} from '../redux/appointmentsSlice';
+import { fetchAppointments, cancelAppointment } from '../redux/thunk';
+import { setSuccess, setError } from '../redux/appointmentsSlice';
 import { Box, Paper, Button, Typography, Alert } from '@mui/material';
 import AppointmentScheduler from './AppointmentScheduler';
-import { useState } from 'react';
 
 function ClientDashboard() {
   const [open, setOpen] = useState(false);
@@ -17,6 +13,12 @@ function ClientDashboard() {
   const error = useSelector(state => state.appointments.error);
   const success = useSelector(state => state.appointments.success);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (clientId) {
+      dispatch(fetchAppointments(clientId));
+    }
+  }, [clientId, dispatch]);
 
   const handleDeleteAppointment = (appointmentId) => {
     dispatch(clearStatus());
@@ -65,5 +67,4 @@ function ClientDashboard() {
     </div>
   );
 }
-
 export default ClientDashboard;

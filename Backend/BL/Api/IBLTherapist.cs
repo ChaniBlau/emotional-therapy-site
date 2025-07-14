@@ -12,6 +12,7 @@ public interface IBLTherapist
 {
     //Task<List<BusyAppointmentForUser>> GetBusyAppointmentsForTherapist(string id, string name);
     Task<List<Therapist>> GetAllTherapists();
+    Task<Therapist?> AuthenticateTherapist(string id, string name);
 
 
 }
