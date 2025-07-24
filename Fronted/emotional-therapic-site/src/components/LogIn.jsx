@@ -36,24 +36,27 @@ const LogIn = () => {
   }
 
   try {
-    // ננסה להתחבר כקליינט
-    let resultAction = await dispatch(loginClient({ id, name }));
-
-    if (loginClient.fulfilled.match(resultAction)) {
-      dispatch(setUser(resultAction.payload));
-      navigate('/client-dashboard');
+    // ננסה קודם כל כ־Client
+    let response = await fetch(`http://localhost:5222/api/Appointments/LoginClient?id=${id}&name=${name}`);
+    if (response.ok) {
+      const user = await response.json();
+      await dispatch(loginClient({ id, name }));
+      dispatch(setUser(user));
+      navigate("/client-dashboard");
       return;
     }
 
-    // אם זה נכשל – ננסה כתרפיסט
-    resultAction = await dispatch(loginTherapist({ id, name }));
-    if (loginTherapist.fulfilled.match(resultAction)) {
-      dispatch(setUser(resultAction.payload));
-      navigate('/therapist-dashboard');
+    // אם לא הצליח – ננסה כ־Therapist
+    response = await fetch(`http://localhost:5222/api/Appointments/LoginTherapist?id=${id}&name=${name}`);
+    if (response.ok) {
+      const user = await response.json();
+      await dispatch(loginTherapist({ id, name }));
+      dispatch(setUser(user));
+      navigate("/therapist-dashboard");
       return;
     }
 
-    // אם גם זה נכשל – הצג דיאלוג
+    // אם שני הנסיונות נכשלו
     setShowDialog(true);
 
   } catch (err) {
@@ -62,6 +65,7 @@ const LogIn = () => {
   }
 };
 
+ 
 
   return (
     <Paper elevation={4} sx={{ p: 4, width: 350, borderRadius: 3 }}>

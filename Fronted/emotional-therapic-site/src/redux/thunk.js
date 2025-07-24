@@ -124,13 +124,17 @@ export const cancelAppointment = createAsyncThunk(
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
-);
+)
 export const fetchAppointments = createAsyncThunk(
   "appointments/fetchAppointments",
   async (clientId, thunkAPI) => {
     try {
+      const name = thunkAPI.getState().user.userInfo?.name;
       const response = await axios.get(
-        `http://localhost:5222/api/Appointments/Client?clientId=${clientId}`
+        `http://localhost:5222/api/Appointments/GetAllBusyAppointmentsForUser`,
+        {
+          params: { id: clientId, name }
+        }
       );
       return response.data;
     } catch (error) {
@@ -139,16 +143,19 @@ export const fetchAppointments = createAsyncThunk(
   }
 );
 
+
+
 export const fetchTherapistAppointments = createAsyncThunk(
   "appointments/fetchTherapistAppointments",
   async (therapistId, thunkAPI) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5222/api/Appointments/Therapist?therapistId=${therapistId}`
-      );
+      const response = await axios.get("http://localhost:5222/api/Appointments/Therapist", {
+        params: { therapistId }
+      });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+

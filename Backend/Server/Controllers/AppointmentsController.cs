@@ -136,6 +136,7 @@
 
 using BL.Api;
 using BL.Models;
+using BL.Services;
 using Dal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -179,6 +180,13 @@ public class AppointmentsController : ControllerBase
     //    }
     //    return Ok(result);
     //}
+    //[HttpGet("Therapist")]
+    //public async Task<IActionResult> GetAppointmentsForTherapist(string therapistId)
+    //{
+    //    var appointments = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
+    //    return Ok(appointments);
+    //}
+
 
     [HttpGet("GetAllBusyAppointmentsForUser")]
     public async Task<ActionResult<List<BusyAppointmentForUser>>> GetAllBusyAppointmentsForUser([FromQuery] string id, [FromQuery] string name)
@@ -267,7 +275,7 @@ public class AppointmentsController : ControllerBase
 
         return Ok(availableTherapists);
     }
-    [HttpGet("Therapist/BusyAppointments")]
+    [HttpGet("Therapist")]
     public async Task<ActionResult<List<BusyAppointmentForUser>>> GetBusyAppointmentsForTherapist([FromQuery] string therapistId)
     {
         var result = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
@@ -325,6 +333,14 @@ public class AppointmentsController : ControllerBase
             role = "therapist"
         });
     }
+    [HttpGet("LoginTherapist")]
+    public async Task<IActionResult> LoginTherapist(string id, string name)
+    {
+        var result = await _userService.LogInSpecificUser(id, name);
+        if (result == null || !result.Any()) return NotFound();
+        return Ok(result);
+    }
+
 
     [HttpGet("LoginClient")]
     public async Task<IActionResult> LoginClient([FromQuery] string id, [FromQuery] string name)

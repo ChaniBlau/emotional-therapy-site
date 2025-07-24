@@ -29,21 +29,28 @@ namespace BL.Services
 
             var allAppointments = await _busyAppointment.ReadAllAsync();
 
-            return allAppointments
-                .Where(a => a.ClientId == clientId)
-                .Select(a => new BusyAppointmentForUser
+            var result = new List<BusyAppointmentForUser>();
+
+            foreach (var a in allAppointments.Where(a => string.Equals(a.ClientId.Trim(), clientId.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                var therapist = await _therapist.ReadByIdAsync(a.TherapistId);
+
+                result.Add(new BusyAppointmentForUser
                 {
                     Id = client.Id,
-                    Name = $"{client.FirstName} {client.LastName}",
+                    Name = $"{therapist.FirstName} {therapist.LastName}",
                     Date = a.Date.ToDateTime(a.Time),
                     Role = "Client",
                     Age = DateTime.Now.Year - client.YearOfBirth,
                     Email = client.Email,
                     PhoneNumber = client.PhoneNumber,
                     ClientName = null
-                })
-                .ToList();
+                });
+            }
+
+            return result;
         }
+
 
         public async Task<List<BusyAppointmentForUser>> GetAllAppointmentsForTherapist(string therapistId)
         {

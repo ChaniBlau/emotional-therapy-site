@@ -40,14 +40,14 @@ public class BLUserService : IBLUser
         var appointments = new List<BusyAppointmentForUser>();
 
         var client = await _client.ReadByIdAsync(id);
-        if (client != null && client.FirstName == name)
+        if (client != null)
         {
             var clientAppointments = await _busyAppointmentService.GetAllAppointmentsForClient(id);
             appointments.AddRange(clientAppointments);
         }
 
         var therapist = await _therapist.ReadByIdAsync(id);
-        if (therapist != null && therapist.FirstName == name)
+        if (therapist != null)
         {
             var therapistAppointments = await _busyAppointmentService.GetAllAppointmentsForTherapist(id);
             appointments.AddRange(therapistAppointments);
