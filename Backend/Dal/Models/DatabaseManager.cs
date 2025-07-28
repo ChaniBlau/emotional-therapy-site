@@ -16,7 +16,6 @@ public partial class DatabaseManager : DbContext
     public virtual DbSet<EmptyAppointment> EmptyAppointments { get; set; }
     public virtual DbSet<Therapist> Therapists { get; set; }
     public virtual DbSet<TherapistWorkingHour> TherapistWorkingHours { get; set; }
-
   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

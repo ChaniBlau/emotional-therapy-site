@@ -1,140 +1,4 @@
-﻿//using System.Threading.Tasks;
-//using BL.Api;
-//using BL.Models;
-//using BL.Services;
-//using Dal.Api;
-//using Dal.Models;
-//using Dal.Services;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-
-//namespace Server.Controllers;
-
-//[Route("api/[controller]")]
-//[ApiController]
-//public class AppointmentsController : ControllerBase
-//{
-//    BusyAppointmentForUser _blBusyAppointments;
-//    private readonly IBLUser _blUser;
-//    private readonly IBLClient _blClient;
-//    IClient clients;
-//    ITherapist therapists;
-//    IBusyAppointment busyAppointments;
-//    //public AppointmentsController(IDal dal)
-//    //{
-//    ////    // _blUser = bLUser;
-//    // clients = dal.Clients;
-//    ////    //therapists = dal.Therapists;
-//    ////    busyAppointments = dal.BusyAppointments;
-//    //}
-//    //
-//    //
-//    //public AppointmentsController(IBL bL)
-//    //{
-//    //    //_blUser = blUser;
-//    //    _blClient = bL.BLClients;
-//    //    //therapists = dal.Therapists;
-//    //    _blUser = bL.BLUsers;
-//    //}
-//    public AppointmentsController(IDal dal, IBL bL)
-//    {
-//        clients = dal.Clients;
-//        _blClient = bL.BLClients;
-//        _blUser = bL.BLUsers;
-//    }
-
-//    [HttpGet]
-//    //Get all clients
-
-//    public async Task<ActionResult<List<Client>>> GetAllClients()
-//    {
-//        var result = await clients.ReadAllAsync();
-//        if (result == null)
-//        {
-//            return NotFound();
-//        }
-//        return Ok(result);
-//    }
-
-//    //Get all therapists
-
-//    //public async Task<ActionResult<List<Therapist>>> GetAllTherapists()
-//    //{
-//    //    var result = await therapists.ReadAllAsync();
-//    //    if (result == null)
-//    //    {
-//    //        return NotFound();
-//    //    }
-//    //    return Ok(result);
-//    //}
-
-//    //Get all busy appointments for user
-//    [HttpGet("GetAllBusyAppointmentsForUser")]
-//    public async Task<ActionResult<List<BusyAppointmentForUser>>> GetAllBusyAppointmentsForUser([FromQuery] string id, [FromQuery] string name)
-//    {
-//        var result = await _blUser.LogInSpecificUser(id, name);
-//        return Ok(result);
-//    }
-
-
-//    [HttpPost("CreateNewClient")]
-//    public async Task<ActionResult<bool>> CreateNewClient([FromBody] Client client)
-//    {
-//        if (client == null)
-//        {
-//            return BadRequest("Client data is required.");
-//        }
-
-//        try
-//        {
-//            var result = await client.CreateAsync(client);
-//            if (result)
-//            {
-//                return Ok(true);
-//            }
-//            else
-//            {
-//                return StatusCode(500, "Failed to create the client.");
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            // Log the exception (if logging is set up)
-//            return StatusCode(500, $"An error occurred: {ex.Message}");
-//        }
-//    }
-//    //Get all busy appointments
-
-//    //public async Task<ActionResult<List<BusyAppointment>>> GetAllBusyAppointments()
-//    //{
-//    //    var result = await busyAppointments.ReadAllAsync();
-//    //    if (result == null)
-//    //    {
-//    //        return NotFound();
-//    //    }
-//    //    return Ok(result);
-//    //}
-
-//    //Scedule appointment
-//    [HttpPost]
-//    public async Task<ActionResult<bool>> SceduleAppointment([FromQuery] string therapistId, [FromQuery] DateOnly date, [FromQuery] TimeOnly time, [FromQuery] string clientId)
-//    {
-//        var result = await _blClient.ScheduleAppointment(therapistId, date, time, clientId);
-//        return Ok(result);
-//    }
-
-
-
-//    //Cancle appointment
-//    //[HttpDelete]
-//    //public async Task<ActionResult<bool>> DeleteAppointment([FromQuery] int code, [FromQuery] string clientId)
-//    //{
-//    //    var result = await _blClient.CancelAppointment(code, clientId);
-//    //    return Ok(result);
-//    //}
-//}
-
-using BL.Api;
+﻿using BL.Api;
 using BL.Models;
 using BL.Services;
 using Dal.Models;
@@ -153,40 +17,23 @@ public class AppointmentsController : ControllerBase
     private readonly IBLBusyAppointment _blBusyAppointment;
     private readonly IBLEmptyAppointment _blEmptyAppointment;
     private readonly IBLUser _blUser;
+    private readonly ILogger<AppointmentsController> _logger;
 
     public AppointmentsController(
         IBLClient blClient,
         IBLTherapist blTherapist,
         IBLBusyAppointment blBusyAppointment,
         IBLEmptyAppointment blEmptyAppointment,
-        IBLUser blUser)
+        IBLUser blUser,
+        ILogger<AppointmentsController> logger)
     {
         _blClient = blClient;
         _blTherapist = blTherapist;
         _blBusyAppointment = blBusyAppointment;
         _blEmptyAppointment = blEmptyAppointment;
         _blUser = blUser;
+        _logger = logger;
     }
-
-
-    //[HttpGet("GetAllClients")]
-    //public async Task<ActionResult<List<Client>>> GetAllClients()
-    //{
-    //    // Ensure the method exists in the IBLClient interface
-    //    var result = await _blClient.GetAllClientsAsync();
-    //    if (result == null)
-    //    {
-    //        return NotFound();
-    //    }
-    //    return Ok(result);
-    //}
-    //[HttpGet("Therapist")]
-    //public async Task<IActionResult> GetAppointmentsForTherapist(string therapistId)
-    //{
-    //    var appointments = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
-    //    return Ok(appointments);
-    //}
-
 
     [HttpGet("GetAllBusyAppointmentsForUser")]
     public async Task<ActionResult<List<BusyAppointmentForUser>>> GetAllBusyAppointmentsForUser([FromQuery] string id, [FromQuery] string name)
@@ -217,18 +64,110 @@ public class AppointmentsController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex); // או לוג אחר
+            _logger.LogError(ex, "Error creating new client");
             return StatusCode(500, $"An error occurred: {ex.Message}");
         }
     }
 
-
-
+    // ✅ תיקון עיקרי - קבלת פרמטרים כ-string ופרסינג נכון
     [HttpPost("ScheduleAppointment")]
-    public async Task<ActionResult<bool>> ScheduleAppointment([FromQuery] string therapistId, [FromQuery] DateOnly date, [FromQuery] TimeOnly time, [FromQuery] string clientId)
+    public async Task<ActionResult<bool>> ScheduleAppointment(
+        [FromQuery] string therapistId,
+        [FromQuery] string date,
+        [FromQuery] string time,
+        [FromQuery] string clientId)
     {
-        var result = await _blClient.ScheduleAppointment(therapistId, date, time, clientId);
-        return Ok(result);
+        try
+        {
+            _logger.LogInformation("ScheduleAppointment called with: therapistId={TherapistId}, date={Date}, time={Time}, clientId={ClientId}",
+                therapistId, date, time, clientId);
+
+            // ✅ בדיקת קלט חובה
+            if (string.IsNullOrEmpty(therapistId))
+            {
+                _logger.LogWarning("TherapistId is null or empty");
+                return BadRequest(new { message = "נדרש מזהה מטפל." });
+            }
+
+            if (string.IsNullOrEmpty(clientId))
+            {
+                _logger.LogWarning("ClientId is null or empty");
+                return BadRequest(new { message = "נדרש מזהה לקוח." });
+            }
+
+            if (string.IsNullOrEmpty(date))
+            {
+                _logger.LogWarning("Date is null or empty");
+                return BadRequest(new { message = "נדרש תאריך." });
+            }
+
+            if (string.IsNullOrEmpty(time))
+            {
+                _logger.LogWarning("Time is null or empty");
+                return BadRequest(new { message = "נדרשת שעה." });
+            }
+
+            // ✅ פרסינג התאריך והשעה עם טיפול בשגיאות
+            DateOnly parsedDate;
+            if (!DateOnly.TryParse(date, out parsedDate))
+            {
+                _logger.LogWarning("Failed to parse date: {Date}", date);
+                return BadRequest(new { message = "פורמט תאריך לא תקין. נדרש: YYYY-MM-DD." });
+            }
+
+            TimeOnly parsedTime;
+            if (!TimeOnly.TryParse(time, out parsedTime))
+            {
+                _logger.LogWarning("Failed to parse time: {Time}", time);
+                return BadRequest(new { message = "פורמט שעה לא תקין. נדרש: HH:MM:SS." });
+            }
+
+            _logger.LogInformation("Parsed values: date={ParsedDate}, time={ParsedTime}", parsedDate, parsedTime);
+
+            // ✅ בדיקה אם המטפל קיים
+            var therapists = await _blTherapist.GetAllTherapists();
+            var therapist = therapists.FirstOrDefault(t => t.Id == therapistId);
+            if (therapist == null)
+            {
+                _logger.LogWarning("Therapist not found: {TherapistId}", therapistId);
+                return BadRequest(new { message = "המטפל לא נמצא." });
+            }
+
+            // ✅ בדיקה שהשעה באמת פנויה
+            _logger.LogInformation("Checking available hours for therapist {TherapistId} on {Date}", therapistId, parsedDate);
+            var availableHours = await _blEmptyAppointment.GetAvailableHours(therapistId, parsedDate);
+
+            _logger.LogInformation("Available hours: {AvailableHours}", string.Join(", ", availableHours));
+            _logger.LogInformation("Requested time: {RequestedTime}", parsedTime);
+
+            if (!availableHours.Contains(parsedTime))
+            {
+                _logger.LogWarning("Time slot not available. Requested: {RequestedTime}, Available: {AvailableHours}",
+                    parsedTime, string.Join(", ", availableHours));
+                return BadRequest(new { message = "התור הנבחר אינו זמין או שהמטפל אינו פנוי בשעה זו." });
+            }
+
+            // ✅ קביעת התור
+            _logger.LogInformation("Attempting to schedule appointment");
+            var result = await _blClient.ScheduleAppointment(therapistId, parsedDate, parsedTime, clientId);
+
+            if (result)
+            {
+                _logger.LogInformation("Appointment scheduled successfully");
+                return Ok(true);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to schedule appointment - business logic returned false");
+                return BadRequest(new { message = "נכשל בקביעת התור. אנא נסה שוב." });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error scheduling appointment for therapist {TherapistId}, date {Date}, time {Time}, client {ClientId}",
+                therapistId, date, time, clientId);
+            return StatusCode(500, new { message = $"אירעה שגיאה: {ex.Message}" });
+        }
     }
 
     [HttpDelete("CancelAppointment")]
@@ -248,114 +187,175 @@ public class AppointmentsController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error cancelling appointment {AppointmentId} for client {ClientId}", appointmentId, clientId);
             return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
         }
     }
+
     [HttpGet("Therapists")]
     public async Task<ActionResult<List<Therapist>>> GetAllTherapists()
     {
-        var therapists = await _blTherapist.GetAllTherapists();
-        return Ok(therapists);
-    }
-    [HttpGet("Client/AvailableTherapistsByDate")]
-    public async Task<ActionResult<List<Therapist>>> GetAvailableTherapistsByDate([FromQuery] DateOnly date)
-    {
-        var therapists = await _blTherapist.GetAllTherapists(); // שכבר כתבת קודם
-        var allEmptyAppointments = await _blEmptyAppointment.GetAllEmptyAppointments();
-
-        var therapistIdsAvailable = allEmptyAppointments
-            .Where(a => a.Date == date)
-            .Select(a => a.TherapistId)
-            .Distinct()
-            .ToList();
-
-        var availableTherapists = therapists
-            .Where(t => therapistIdsAvailable.Contains(t.Id))
-            .ToList();
-
-        return Ok(availableTherapists);
-    }
-    [HttpGet("Therapist")]
-    public async Task<ActionResult<List<BusyAppointmentForUser>>> GetBusyAppointmentsForTherapist([FromQuery] string therapistId)
-    {
-        var result = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
-        return Ok(result);
-    }
-    [HttpGet("AvailableHours")]
-    public async Task<ActionResult<List<TimeOnly>>> GetAvailableHours([FromQuery] string therapistId, [FromQuery] DateOnly date)
-    {
-        var hours = await _blEmptyAppointment.GetAvailableHours(therapistId, date);
-        return Ok(hours);
-    }
-    [HttpGet("Debug/EmptyAppointmentColumns")]
-    public async Task<ActionResult<List<string>>> GetEmptyAppointmentColumnNames()
-    {
-        var columns = new List<string>();
-        var conn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename='C:\\Users\\User\\Desktop\\emotional-therapy-site\\Backend\\Dal\\dataBase\\dataBase.mdf';Integrated Security=True;Connect Timeout=30;Encrypt=True");
-
         try
         {
-            await conn.OpenAsync();
-
-            var cmd = new SqlCommand(
-                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'EmptyAppointments'",
-                conn
-            );
-
-            var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                columns.Add(reader.GetString(0));
-            }
-
-            return Ok(columns);
+            var therapists = await _blTherapist.GetAllTherapists();
+            return Ok(therapists);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
-        }
-        finally
-        {
-            await conn.CloseAsync();
+            _logger.LogError(ex, "Error getting all therapists");
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
         }
     }
+
+    [HttpGet("Client/AvailableTherapistsByDate")]
+    public async Task<ActionResult<List<Therapist>>> GetAvailableTherapistsByDate([FromQuery] string date)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(date))
+            {
+                return BadRequest(new { message = "Date is required." });
+            }
+
+            if (!DateOnly.TryParse(date, out DateOnly parsedDate))
+            {
+                return BadRequest(new { message = "Invalid date format. Expected YYYY-MM-DD." });
+            }
+
+            var availableTherapists = await _blTherapist.GetAvailableTherapistsByDateWithWorkingHours(parsedDate);
+            return Ok(availableTherapists);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting available therapists for date {Date}", date);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
+    }
+
+    [HttpGet("Therapist")]
+    public async Task<ActionResult<List<BusyAppointmentForUser>>> GetBusyAppointmentsForTherapist([FromQuery] string therapistId)
+    {
+        try
+        {
+            var result = await _blBusyAppointment.GetAllAppointmentsForTherapist(therapistId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting busy appointments for therapist {TherapistId}", therapistId);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
+    }
+
+    // ✅ נקודת קצה מקורית
+    [HttpGet("AvailableHours")]
+    public async Task<ActionResult<List<TimeOnly>>> GetAvailableHours([FromQuery] string therapistId, [FromQuery] string date)
+    {
+        try
+        {
+            _logger.LogInformation("GetAvailableHours called with: therapistId={TherapistId}, date={Date}", therapistId, date);
+
+            if (string.IsNullOrEmpty(therapistId))
+            {
+                return BadRequest(new { message = "Therapist ID is required." });
+            }
+
+            if (string.IsNullOrEmpty(date))
+            {
+                return BadRequest(new { message = "Date is required." });
+            }
+
+            if (!DateOnly.TryParse(date, out DateOnly parsedDate))
+            {
+                return BadRequest(new { message = "Invalid date format. Expected YYYY-MM-DD." });
+            }
+
+            var hours = await _blEmptyAppointment.GetAvailableHours(therapistId, parsedDate);
+            _logger.LogInformation("Found {Count} available hours for therapist {TherapistId} on {Date}",
+                hours.Count, therapistId, parsedDate);
+
+            return Ok(hours);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting available hours for therapist {TherapistId} on date {Date}", therapistId, date);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
+    }
+
+    // ✅ נקודת קצה חדשה שהפרונטאנד מחפש
+    [HttpGet("GetAvailableHours")]
+    public async Task<ActionResult<List<TimeOnly>>> GetAvailableHoursAlias([FromQuery] string therapistId, [FromQuery] string date)
+    {
+        return await GetAvailableHours(therapistId, date);
+    }
+
     [HttpGet("LoginTherapist")]
     public async Task<IActionResult> LoginTherapist([FromQuery] string id, [FromQuery] string name)
     {
-        var therapist = await _blTherapist.AuthenticateTherapist(id, name);
-        if (therapist == null)
-            return NotFound();
-
-        return Ok(new
+        try
         {
-            id = therapist.Id,
-            name = therapist.FirstName + " " + therapist.LastName,
-            role = "therapist"
-        });
-    }
-    [HttpGet("LoginTherapist")]
-    public async Task<IActionResult> LoginTherapist(string id, string name)
-    {
-        var result = await _userService.LogInSpecificUser(id, name);
-        if (result == null || !result.Any()) return NotFound();
-        return Ok(result);
-    }
+            var therapist = await _blTherapist.AuthenticateTherapist(id, name);
+            if (therapist == null)
+                return NotFound();
 
+            return Ok(new
+            {
+                id = therapist.Id,
+                name = therapist.FirstName + " " + therapist.LastName,
+                role = "therapist"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during therapist login for id {Id}", id);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
+    }
 
     [HttpGet("LoginClient")]
     public async Task<IActionResult> LoginClient([FromQuery] string id, [FromQuery] string name)
     {
-        var client = await _blClient.AuthenticateClient(id, name);
-        if (client == null)
-            return NotFound();
-
-        return Ok(new
+        try
         {
-            id = client.Id,
-            name = client.FirstName + " " + client.LastName,
-            role = "client"
-        });
+            var client = await _blClient.AuthenticateClient(id, name);
+            if (client == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                id = client.Id,
+                name = client.FirstName + " " + client.LastName,
+                role = "client"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during client login for id {Id}", id);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
     }
 
+    // ✅ נקודת קצה חסרה לקבלת תורים של לקוח
+    [HttpGet("GetByClient/{clientId}")]
+    public async Task<ActionResult<List<object>>> GetClientAppointments(string clientId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                return BadRequest(new { message = "Client ID is required." });
+            }
 
+            // תצטרך ליישם את השיטה הזאת ב-Business Logic שלך
+            // או להשתמש בשיטה קיימת
+            var appointments = await _blBusyAppointment.GetAllAppointmentsForClient(clientId);
+            return Ok(appointments);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting appointments for client {ClientId}", clientId);
+            return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+        }
+    }
 }

@@ -25,6 +25,8 @@ builder.Services.AddScoped<IBLUser, BLUserService>();
 builder.Services.AddScoped<IBLBusyAppointment, BLBusyAppointmentService>();
 builder.Services.AddScoped<IBLEmptyAppointment, BLEmptyAppointmentService>();
 builder.Services.AddScoped<IBLTherapist, BLTherapistService>();
+builder.Services.AddScoped<ITherapistWorkingHours,TherapistWorkingHoursService>();
+
 
 // Register Controllers
 builder.Services.AddControllers();

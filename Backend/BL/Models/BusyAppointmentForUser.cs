@@ -10,6 +10,7 @@ namespace BL.Models;
 public class BusyAppointmentForUser
 
 {
+    public int AppointmentId { get; set; } 
     public string? Id { get; set; }
     public DateTime Date { get; set; }
     public string Name { get; set; }
@@ -17,7 +18,7 @@ public class BusyAppointmentForUser
     public string? PhoneNumber { get; set; }
     public int? Age { get; set; }
     public string? Role { get; set; }
-    public string? ClientName { get; set; } // <-- הוסף שדה זה
+    public string? ClientName { get; set; } 
 
 
 }

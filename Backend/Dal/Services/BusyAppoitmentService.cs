@@ -21,7 +21,10 @@ public class BusyAppoitmentService : IBusyAppointment
 
     public async Task<bool> DeleteAsync(string id)
     {
-        var appointment = await _db.BusyAppointments.FindAsync(id);
+        if (!int.TryParse(id, out int intId))
+            throw new ArgumentException("Invalid appointment ID format");
+        var appointment = await _db.BusyAppointments.FindAsync(intId);
+
         if (appointment == null) return false;
         _db.BusyAppointments.Remove(appointment);
         return await _db.SaveChangesAsync() > 0;

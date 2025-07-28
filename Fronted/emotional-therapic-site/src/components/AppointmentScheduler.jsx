@@ -1,8 +1,8 @@
-// AppointmentScheduler.jsx
 import React, { useState, useEffect } from "react";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { format, isValid, parseISO } from 'date-fns';
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +14,8 @@ import {
   Select,
   MenuItem,
   TextField,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,6 +23,7 @@ import {
   setSelectedTherapist,
   setSelectedTime,
   setMode,
+  clearStatus,
 } from "../redux/appointmentsSlice";
 import {
   fetchTherapists,
@@ -28,7 +31,6 @@ import {
   fetchAppointments,
   fetchAvailableHours,
   fetchAvailableTherapistsByDate,
-  cancelAppointment
 } from '../redux/thunk';
 
 const AppointmentScheduler = ({ open, handleClose }) => {
@@ -41,63 +43,160 @@ const AppointmentScheduler = ({ open, handleClose }) => {
     selectedTime,
     mode,
     availableHours,
+    loading,
+    error,
+    success
   } = useSelector((state) => state.appointments);
-  const clientId = useSelector((state) => state.user.client?.id);
+  
+  const clientId = useSelector((state) => state.user.userInfo?.id);
   const role = useSelector((state) => state.user.role);
 
-  const [localDate, setLocalDate] = useState("");
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
-    dispatch(fetchTherapists());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (selectedTherapist && selectedDate) {
-      dispatch(fetchAvailableHours({ therapistId: selectedTherapist, date: selectedDate }));
+    if (open) {
+      dispatch(fetchTherapists());
+      dispatch(clearStatus());
+      setValidationError('');
     }
-  }, [dispatch, selectedTherapist, selectedDate]);
+  }, [dispatch, open]);
 
-  const handleDateChange = (e) => {
-    const date = e.target.value;
-    setLocalDate(date);
-    dispatch(setSelectedDate(date));
-    if (mode === "date") {
-      dispatch(fetchAvailableTherapistsByDate(date));
+  // כאשר התאריך משתנה, טען רופאים זמינים או שעות זמינות
+  useEffect(() => {
+    if (selectedDate) {
+      if (mode === "date") {
+        dispatch(fetchAvailableTherapistsByDate(selectedDate));
+      }
+      
+      if (selectedTherapist && selectedDate) {
+        dispatch(fetchAvailableHours({ therapistId: selectedTherapist, date: selectedDate }));
+      }
+    }
+  }, [dispatch, selectedDate, selectedTherapist, mode]);
+
+  const handleDateChange = (newValue) => {
+    try {
+      if (newValue && isValid(newValue)) {
+        const formattedDate = format(newValue, 'yyyy-MM-dd');
+        dispatch(setSelectedDate(formattedDate));
+        // אפס את הרופא והזמן הנבחרים כשמשנים תאריך
+        dispatch(setSelectedTherapist(''));
+        dispatch(setSelectedTime(''));
+      } else {
+        dispatch(setSelectedDate(''));
+        dispatch(setSelectedTherapist(''));
+        dispatch(setSelectedTime(''));
+      }
+    } catch (error) {
+      console.error('Invalid date:', error);
+      dispatch(setSelectedDate(''));
+      dispatch(setSelectedTherapist(''));
+      dispatch(setSelectedTime(''));
     }
   };
 
+  const handleTherapistChange = (therapistId) => {
+    dispatch(setSelectedTherapist(therapistId));
+    dispatch(setSelectedTime('')); // אפס את הזמן כשמשנים רופא
+  };
+
+  const handleModeChange = (newMode) => {
+    dispatch(setMode(newMode));
+    // אפס את כל הבחירות כשמשנים מצב
+    dispatch(setSelectedDate(''));
+    dispatch(setSelectedTherapist(''));
+    dispatch(setSelectedTime(''));
+  };
+
   const handleSchedule = async () => {
-    if (!selectedTherapist || !selectedDate || !selectedTime || !clientId) return;
+    // וולידציה
+    if (!selectedTherapist || !selectedDate || !selectedTime || !clientId) {
+      setValidationError('Please fill in all fields');
+      return;
+    }
 
-    const resultAction = await dispatch(
-      scheduleAppointment({
-        therapistId: selectedTherapist,
-        date: selectedDate,
-        time: selectedTime,
-        clientId,
-      })
-    );
+    setValidationError('');
 
-    if (scheduleAppointment.fulfilled.match(resultAction)) {
-      alert("The appointment was successfully scheduled!");
-      if (role === "Client") {
-        dispatch(fetchAppointments(clientId));
+    try {
+      const resultAction = await dispatch(
+        scheduleAppointment({
+          therapistId: selectedTherapist,
+          date: selectedDate,
+          time: selectedTime,
+          clientId,
+        })
+      );
+
+      if (scheduleAppointment.fulfilled.match(resultAction)) {
+        // רענן את רשימת התורים
+        if (role === "client") {
+          dispatch(fetchAppointments(clientId));
+        }
+        
+        // סגור את הדיאלוג
+        handleCloseDialog();
       }
-      handleClose();
-    } else {
-      alert("An error occurred while scheduling the appointment.");
+    } catch (error) {
+      console.error('Error scheduling appointment:', error);
+      setValidationError('Failed to schedule appointment. Please try again.');
+    }
+  };
+
+  const handleCloseDialog = () => {
+    // איפוס הטופס
+    dispatch(setSelectedTherapist(''));
+    dispatch(setSelectedDate(''));
+    dispatch(setSelectedTime(''));
+    dispatch(clearStatus());
+    setValidationError('');
+    handleClose();
+  };
+
+  // המר את selectedDate חזרה ל-Date object עבור ה-DatePicker
+  const dateValue = selectedDate ? parseISO(selectedDate) : null;
+
+  // פורמט יפה לתצוגת השעות
+  const formatTime = (timeString) => {
+    try {
+      if (typeof timeString === 'string') {
+        // אם זה בפורמט HH:mm:ss או HH:mm
+        const timeParts = timeString.split(':');
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        
+        if (!isNaN(hours) && !isNaN(minutes)) {
+          const date = new Date();
+          date.setHours(hours, minutes, 0, 0);
+          return format(date, 'HH:mm');
+        }
+      }
+      return timeString;
+    } catch (error) {
+      return timeString;
     }
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
       <DialogTitle>Schedule an appointment</DialogTitle>
       <DialogContent>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {typeof error === 'string' ? error : (error.message || 'An error occurred')}
+          </Alert>
+        )}
+        
+        {validationError && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            {validationError}
+          </Alert>
+        )}
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Filter by</InputLabel>
           <Select
             value={mode}
-            onChange={(e) => dispatch(setMode(e.target.value))}
+            onChange={(e) => handleModeChange(e.target.value)}
             label="Filter by"
           >
             <MenuItem value="therapist">According to therapist</MenuItem>
@@ -105,12 +204,30 @@ const AppointmentScheduler = ({ open, handleClose }) => {
           </Select>
         </FormControl>
 
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Choose Date"
+            value={dateValue}
+            onChange={handleDateChange}
+            minDate={new Date()}
+            format="dd/MM/yyyy"
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: "normal",
+                error: false,
+              }
+            }}
+          />
+        </LocalizationProvider>
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Select a therapist</InputLabel>
           <Select
             value={selectedTherapist}
-            onChange={(e) => dispatch(setSelectedTherapist(e.target.value))}
+            onChange={(e) => handleTherapistChange(e.target.value)}
             label="Select a therapist"
+            disabled={mode === "date" && !selectedDate}
           >
             {(mode === "therapist" ? therapists : availableTherapists).map((therapist) => (
               <MenuItem key={therapist.id} value={therapist.id}>
@@ -120,40 +237,44 @@ const AppointmentScheduler = ({ open, handleClose }) => {
           </Select>
         </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-  <DatePicker
-    label="Choose Date"
-    value={localDate}
-    onChange={(newValue) => {
-      setLocalDate(newValue);
-      dispatch(setSelectedDate(newValue));
-      if (mode === "date") {
-        dispatch(fetchAvailableTherapistsByDate(newValue));
-      }
-    }}
-    renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-  />
-</LocalizationProvider>
         <FormControl fullWidth margin="normal">
           <InputLabel>Select time</InputLabel>
           <Select
             value={selectedTime}
             onChange={(e) => dispatch(setSelectedTime(e.target.value))}
             label="Choose a time"
+            disabled={!selectedTherapist || !selectedDate}
           >
-            {availableHours.map((time, index) => (
-              <MenuItem key={index} value={time}>
-                {time}
-              </MenuItem>
-            ))}
+            {availableHours && availableHours.length > 0 ? (
+              availableHours.map((time, index) => (
+                <MenuItem key={index} value={time}>
+                  {formatTime(time)}
+                </MenuItem>
+              ))
+            ) : (
+              selectedTherapist && selectedDate && !loading && (
+                <MenuItem disabled>No available hours for this date</MenuItem>
+              )
+            )}
           </Select>
         </FormControl>
+
+        {loading && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+            <CircularProgress />
+          </div>
+        )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSchedule} variant="contained" color="primary">
-         Make an appointment
+        <Button onClick={handleCloseDialog}>Cancel</Button>
+        <Button 
+          onClick={handleSchedule} 
+          variant="contained" 
+          color="primary"
+          disabled={loading || !selectedTherapist || !selectedDate || !selectedTime}
+        >
+          {loading ? 'Scheduling...' : 'Make an appointment'}
         </Button>
       </DialogActions>
     </Dialog>

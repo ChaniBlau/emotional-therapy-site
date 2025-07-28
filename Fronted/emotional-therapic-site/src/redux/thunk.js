@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ id, name }, thunkAPI) => {
@@ -13,6 +14,7 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
 export const loginClient = createAsyncThunk(
   "user/loginClient",
   async ({ id, name }, thunkAPI) => {
@@ -60,7 +62,7 @@ export const fetchTherapists = createAsyncThunk(
   "appointments/fetchTherapists",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("http://localhost:5222/api/Therapists");
+      const response = await axios.get("http://localhost:5222/api/Appointments/Therapists");
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -73,8 +75,7 @@ export const fetchAvailableTherapistsByDate = createAsyncThunk(
   async (date, thunkAPI) => {
     try {
       const response = await axios.get(
-        `http://localhost:5222/api/Appointments/Client/AvailableTherapistsByDate?date=${date}
-`
+        `http://localhost:5222/api/Appointments/Client/AvailableTherapistsByDate?date=${date}`
       );
       return response.data;
     } catch (error) {
@@ -83,6 +84,7 @@ export const fetchAvailableTherapistsByDate = createAsyncThunk(
   }
 );
 
+// תיקון חשוב! זה היה קורא לScheduleAppointment במקום AvailableHours
 export const fetchAvailableHours = createAsyncThunk(
   "appointments/fetchAvailableHours",
   async ({ therapistId, date }, thunkAPI) => {
@@ -102,8 +104,18 @@ export const scheduleAppointment = createAsyncThunk(
   async ({ therapistId, date, time, clientId }, thunkAPI) => {
     try {
       const response = await axios.post(
-        `http://localhost:5222/api/Appointments/Schedule`,
-        { therapistId, date, time, clientId }
+        `http://localhost:5222/api/Appointments/ScheduleAppointment`,
+        {
+          therapistId: parseInt(therapistId.toString().trim()),
+          date: date,
+          time: time,
+          clientId: parseInt(clientId.toString().trim())
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       return response.data;
     } catch (error) {
@@ -111,20 +123,19 @@ export const scheduleAppointment = createAsyncThunk(
     }
   }
 );
+
 export const cancelAppointment = createAsyncThunk(
   "appointments/cancelAppointment",
   async ({ appointmentId, clientId }, thunkAPI) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5222/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`
-      );
-      // Assuming the backend returns the cancelled appointment ID or a success message
-      return response.data;
+      await axios.delete(`http://localhost:5222/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`);
+      return appointmentId;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
-)
+);
+
 export const fetchAppointments = createAsyncThunk(
   "appointments/fetchAppointments",
   async (clientId, thunkAPI) => {
@@ -143,8 +154,6 @@ export const fetchAppointments = createAsyncThunk(
   }
 );
 
-
-
 export const fetchTherapistAppointments = createAsyncThunk(
   "appointments/fetchTherapistAppointments",
   async (therapistId, thunkAPI) => {
@@ -158,4 +167,3 @@ export const fetchTherapistAppointments = createAsyncThunk(
     }
   }
 );
-

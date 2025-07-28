@@ -1,4 +1,3 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchTherapists,
@@ -42,34 +41,39 @@ const appointmentsSlice = createSlice({
       state.error = null;
       state.success = null;
     },
-     setError: (state, action) => {
+    setError: (state, action) => {
       state.error = action.payload;
-      state.success = null; // נקה הצלחה כאשר יש שגיאה
+      state.success = null;
     },
     setSuccess: (state, action) => {
       state.success = action.payload;
-      state.error = null; // נקה שגיאה כאשר יש הצלחה
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
     builder
-    .addCase(cancelAppointment.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(cancelAppointment.fulfilled, (state, action) => {
-      state.loading = false;
-      // הסר את התור מהרשימה לאחר ביטול מוצלח
-      state.appointments = state.appointments.filter(
-        (app) => app.id !== action.payload // בהנחה ש-action.payload הוא ה-ID של התור שבוטל
-      );
-      state.success = "Appointment cancelled successfully!"; // דוגמה לטיפול בהודעת הצלחה
-    })
-    .addCase(cancelAppointment.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-
+      // Cancel Appointment
+      .addCase(cancelAppointment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelAppointment.fulfilled, (state, action) => {
+        state.loading = false;
+        const appointmentIdToRemove = action.payload;
+        
+        state.appointments = state.appointments.filter((app) => {
+          const appId = app.appointmentId || app.id || app.code || app.Code;
+          return appId != appointmentIdToRemove;
+        });
+        
+        state.success = "Appointment cancelled successfully!";
+      })
+      .addCase(cancelAppointment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to cancel appointment";
+      })
+      
+      // Fetch Therapists
       .addCase(fetchTherapists.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -82,27 +86,76 @@ const appointmentsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      
+      // Fetch Available Therapists By Date
+      .addCase(fetchAvailableTherapistsByDate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchAvailableTherapistsByDate.fulfilled, (state, action) => {
         state.availableTherapists = action.payload;
+        state.loading = false;
       })
+      .addCase(fetchAvailableTherapistsByDate.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Schedule Appointment
       .addCase(scheduleAppointment.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(scheduleAppointment.fulfilled, (state) => {
         state.loading = false;
+        state.success = "Appointment scheduled successfully!";
       })
       .addCase(scheduleAppointment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+      
+      // Fetch Available Hours - החשוב ביותר!
+      .addCase(fetchAvailableHours.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchAvailableHours.fulfilled, (state, action) => {
-        state.availableHours = action.payload;
+        state.availableHours = action.payload || [];
+        state.loading = false;
+      })
+      .addCase(fetchAvailableHours.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.availableHours = []; // אפס את השעות בשגיאה
+      })
+      
+      // Fetch Appointments
+      .addCase(fetchAppointments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchAppointments.fulfilled, (state, action) => {
         state.appointments = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAppointments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Fetch Therapist Appointments
+      .addCase(fetchTherapistAppointments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchTherapistAppointments.fulfilled, (state, action) => {
         state.appointments = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchTherapistAppointments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   }
 });

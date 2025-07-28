@@ -133,11 +133,17 @@ public class BLClientService : IBLClient
 
     public async Task<bool> CancelAppointment(int appointmentId, string clientId)
     {
+        Console.WriteLine("Received clientId: '" + clientId + "'");
+
         var busyAppointments = await _busyAppointment.ReadAllAsync();
+        foreach (var a in busyAppointments)
+            Console.WriteLine($"Code: {a.Code}, ClientId: {a.ClientId}");
+        var normalizedClientId = clientId?.Trim().ToLower();
+
         var appointmentToRemove = busyAppointments.FirstOrDefault(a =>
             a.Code == appointmentId &&
-            a.ClientId.Trim().Equals(clientId.Trim(), StringComparison.OrdinalIgnoreCase));
-
+            a.ClientId?.Trim().ToLower() == normalizedClientId);
+        Console.WriteLine($"Looking for appointmentId: {appointmentId}, clientId: '{normalizedClientId}'");
         if (appointmentToRemove == null)
         {
             throw new Exception("The selected appointment does not exist.");
