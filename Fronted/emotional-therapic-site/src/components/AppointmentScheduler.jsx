@@ -61,7 +61,6 @@ const AppointmentScheduler = ({ open, handleClose }) => {
     }
   }, [dispatch, open]);
 
-  // כאשר התאריך משתנה, טען רופאים זמינים או שעות זמינות
   useEffect(() => {
     if (selectedDate) {
       if (mode === "date") {
@@ -79,7 +78,6 @@ const AppointmentScheduler = ({ open, handleClose }) => {
       if (newValue && isValid(newValue)) {
         const formattedDate = format(newValue, 'yyyy-MM-dd');
         dispatch(setSelectedDate(formattedDate));
-        // אפס את הרופא והזמן הנבחרים כשמשנים תאריך
         dispatch(setSelectedTherapist(''));
         dispatch(setSelectedTime(''));
       } else {
@@ -97,19 +95,17 @@ const AppointmentScheduler = ({ open, handleClose }) => {
 
   const handleTherapistChange = (therapistId) => {
     dispatch(setSelectedTherapist(therapistId));
-    dispatch(setSelectedTime('')); // אפס את הזמן כשמשנים רופא
+    dispatch(setSelectedTime('')); 
   };
 
   const handleModeChange = (newMode) => {
     dispatch(setMode(newMode));
-    // אפס את כל הבחירות כשמשנים מצב
     dispatch(setSelectedDate(''));
     dispatch(setSelectedTherapist(''));
     dispatch(setSelectedTime(''));
   };
 
   const handleSchedule = async () => {
-    // וולידציה
     if (!selectedTherapist || !selectedDate || !selectedTime || !clientId) {
       setValidationError('Please fill in all fields');
       return;
@@ -128,12 +124,10 @@ const AppointmentScheduler = ({ open, handleClose }) => {
       );
 
       if (scheduleAppointment.fulfilled.match(resultAction)) {
-        // רענן את רשימת התורים
         if (role === "client") {
           dispatch(fetchAppointments(clientId));
         }
         
-        // סגור את הדיאלוג
         handleCloseDialog();
       }
     } catch (error) {
@@ -143,7 +137,6 @@ const AppointmentScheduler = ({ open, handleClose }) => {
   };
 
   const handleCloseDialog = () => {
-    // איפוס הטופס
     dispatch(setSelectedTherapist(''));
     dispatch(setSelectedDate(''));
     dispatch(setSelectedTime(''));
@@ -152,14 +145,11 @@ const AppointmentScheduler = ({ open, handleClose }) => {
     handleClose();
   };
 
-  // המר את selectedDate חזרה ל-Date object עבור ה-DatePicker
   const dateValue = selectedDate ? parseISO(selectedDate) : null;
 
-  // פורמט יפה לתצוגת השעות
   const formatTime = (timeString) => {
     try {
       if (typeof timeString === 'string') {
-        // אם זה בפורמט HH:mm:ss או HH:mm
         const timeParts = timeString.split(':');
         const hours = parseInt(timeParts[0]);
         const minutes = parseInt(timeParts[1]);
@@ -180,6 +170,12 @@ const AppointmentScheduler = ({ open, handleClose }) => {
     <Dialog open={open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
       <DialogTitle>Schedule an appointment</DialogTitle>
       <DialogContent>
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {typeof error === 'string' ? error : (error.message || 'An error occurred')}

@@ -32,75 +32,102 @@ public class BLUserService : IBLUser
         _blTherapist = blTherapist;
     }
 
-
     public async Task<List<BusyAppointmentForUser>> LogInSpecificUser(string id, string name)
     {
-        var busyAppointments = await _busyAppointment.ReadAllAsync();
-        var clients = await _client.ReadAllAsync();
-        var therapists = await _therapist.ReadAllAsync();
-
-        if (busyAppointments == null)
+        try
         {
-            return new List<BusyAppointmentForUser>();
-        }
+            var busyAppointments = await _busyAppointment.ReadAllAsync();
+            var clients = await _client.ReadAllAsync();
+            var therapists = await _therapist.ReadAllAsync();
 
-        // בדוק אם זה לקוח
-        var isClient = clients.Any(c => c.Id.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase));
-
-        if (isClient)
-        {
-            // החזר תורים עבור לקוח
-            return busyAppointments
-                .Where(app => app.ClientId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase))
-                .Select(appointment =>
-                {
-                    var therapistForDetails = therapists.FirstOrDefault(t => t.Id.Equals(appointment.TherapistId.Trim()));
-                    DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
-
-                    return new BusyAppointmentForUser
-                    {
-                        Id = appointment.Code.ToString(), // זה המפתח - החזר את מזהה התור!
-                        AppointmentId = appointment.Code, // הוסף גם שדה נוסף לוודאות
-                        Role = "Client",
-                        Date = appointmentDateTime,
-                        Name = therapistForDetails?.FirstName + " " + therapistForDetails?.LastName,
-                        Email = therapistForDetails?.Email,
-                        PhoneNumber = therapistForDetails?.PhoneNumber
-                    };
-                })
-                .ToList();
-        }
-        else
-        {
-            // בדוק אם זה מטפל
-            var isTherapist = therapists.Any(t => t.Id.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase));
-
-            if (isTherapist)
+            if (busyAppointments == null || !busyAppointments.Any())
             {
-                // החזר תורים עבור מטפל
+                return new List<BusyAppointmentForUser>();
+            }
+
+            var normalizedId = id?.Trim();
+            if (string.IsNullOrEmpty(normalizedId))
+            {
+                return new List<BusyAppointmentForUser>();
+            }
+
+            var isClient = clients?.Any(c =>
+                c.Id.Trim().Equals(normalizedId, StringComparison.OrdinalIgnoreCase)) ?? false;
+
+            if (isClient)
+            {
                 return busyAppointments
-                    .Where(app => app.TherapistId.Trim().Equals(id.Trim(), StringComparison.OrdinalIgnoreCase))
+                    .Where(app => app.ClientId.Trim().Equals(normalizedId, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(app => app.Date)
+                    .ThenByDescending(app => app.Time)
                     .Select(appointment =>
                     {
-                        var clientForDetails = clients.FirstOrDefault(c => c.Id.Equals(appointment.ClientId.Trim()));
+                        var therapistForDetails = therapists?.FirstOrDefault(t =>
+                            t.Id.Trim().Equals(appointment.TherapistId.Trim(), StringComparison.OrdinalIgnoreCase));
+
                         DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
 
                         return new BusyAppointmentForUser
                         {
                             Id = appointment.Code.ToString(),
-                            AppointmentId = appointment.Code,
-                            Role = "Therapist",
+                            AppointmentId = appointment.Code, // מזהה התור למחיקה
+                            Role = "Client",
                             Date = appointmentDateTime,
-                            Name = clientForDetails?.FirstName + " " + clientForDetails?.LastName,
-                            Email = clientForDetails?.Email,
-                            PhoneNumber = clientForDetails?.PhoneNumber,
-                            Age = clientForDetails != null ? DateTime.Now.Year - clientForDetails.YearOfBirth : 0
+                            Name = therapistForDetails != null ?
+                                $"{therapistForDetails.FirstName} {therapistForDetails.LastName}" :
+                                "Unknown Therapist",
+                            Email = therapistForDetails?.Email,
+                            PhoneNumber = therapistForDetails?.PhoneNumber
                         };
                     })
                     .ToList();
             }
-        }
+            else
+            {
+                // בדוק אם זה מטפל
+                var isTherapist = therapists?.Any(t =>
+                    t.Id.Trim().Equals(normalizedId, StringComparison.OrdinalIgnoreCase)) ?? false;
 
-        return new List<BusyAppointmentForUser>();
+                if (isTherapist)
+                {
+                    // החזר תורים עבור מטפל
+                    return busyAppointments
+                        .Where(app => app.TherapistId.Trim().Equals(normalizedId, StringComparison.OrdinalIgnoreCase))
+                        .OrderByDescending(app => app.Date)
+                        .ThenByDescending(app => app.Time)
+                        .Select(appointment =>
+                        {
+                            var clientForDetails = clients?.FirstOrDefault(c =>
+                                c.Id.Trim().Equals(appointment.ClientId.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                            DateTime appointmentDateTime = appointment.Date.ToDateTime(appointment.Time);
+
+                            return new BusyAppointmentForUser
+                            {
+                                Id = appointment.Code.ToString(),
+                                AppointmentId = appointment.Code, // מזהה התור למחיקה
+                                Role = "Therapist",
+                                Date = appointmentDateTime,
+                                Name = clientForDetails != null ?
+                                    $"{clientForDetails.FirstName} {clientForDetails.LastName}" :
+                                    "Unknown Client",
+                                Email = clientForDetails?.Email,
+                                PhoneNumber = clientForDetails?.PhoneNumber,
+                                Age = clientForDetails != null ?
+                                    DateTime.Now.Year - clientForDetails.YearOfBirth : 0
+                            };
+                        })
+                        .ToList();
+                }
+            }
+
+            return new List<BusyAppointmentForUser>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in LogInSpecificUser: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            return new List<BusyAppointmentForUser>();
+        }
     }
 }

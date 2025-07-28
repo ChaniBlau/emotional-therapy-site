@@ -84,7 +84,6 @@ export const fetchAvailableTherapistsByDate = createAsyncThunk(
   }
 );
 
-// תיקון חשוב! זה היה קורא לScheduleAppointment במקום AvailableHours
 export const fetchAvailableHours = createAsyncThunk(
   "appointments/fetchAvailableHours",
   async ({ therapistId, date }, thunkAPI) => {
@@ -103,22 +102,33 @@ export const scheduleAppointment = createAsyncThunk(
   "appointments/scheduleAppointment",
   async ({ therapistId, date, time, clientId }, thunkAPI) => {
     try {
+      const cleanTherapistId = therapistId.toString().trim();
+      const cleanClientId = clientId.toString().trim();
+      
+      console.log("Scheduling appointment with:", { 
+        therapistId: cleanTherapistId, 
+        date, 
+        time, 
+        clientId: cleanClientId 
+      });
+      
+      const therapistCheck = await axios.get("http://localhost:5222/api/Appointments/Therapists");
+      console.log("Available therapists:", therapistCheck.data.map(t => ({ id: t.id, name: t.firstName + " " + t.lastName })));
+      console.log("Looking for therapist ID:", cleanTherapistId);
+      
       const response = await axios.post(
-        `http://localhost:5222/api/Appointments/ScheduleAppointment`,
-        {
-          therapistId: parseInt(therapistId.toString().trim()),
-          date: date,
-          time: time,
-          clientId: parseInt(clientId.toString().trim())
-        },
+        `http://localhost:5222/api/Appointments/ScheduleAppointment?therapistId=${cleanTherapistId}&date=${date}&time=${time}&clientId=${cleanClientId}`,
+        {},
         {
           headers: {
             'Content-Type': 'application/json'
           }
         }
       );
+      
       return response.data;
     } catch (error) {
+      console.error("Schedule appointment error:", error.response?.data);
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -128,10 +138,32 @@ export const cancelAppointment = createAsyncThunk(
   "appointments/cancelAppointment",
   async ({ appointmentId, clientId }, thunkAPI) => {
     try {
-      await axios.delete(`http://localhost:5222/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`);
+      console.log("Canceling appointment:", { appointmentId, clientId });
+      
+      await axios.delete(
+        `http://localhost:5222/api/Appointments/CancelAppointment?appointmentId=${appointmentId}&clientId=${clientId}`,
+        {
+          timeout: 10000
+        }
+      );
+      
       return appointmentId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      console.error("Cancel appointment error:", error);
+      
+      let errorMessage = "Failed to cancel appointment";
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || 
+                      error.response.data || 
+                      `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        errorMessage = error.message || "Unknown error occurred";
+      }
+
+      return thunkAPI.rejectWithValue(errorMessage);
     }
   }
 );
@@ -144,11 +176,13 @@ export const fetchAppointments = createAsyncThunk(
       const response = await axios.get(
         `http://localhost:5222/api/Appointments/GetAllBusyAppointmentsForUser`,
         {
-          params: { id: clientId, name }
+          params: { id: clientId, name },
+          timeout: 10000
         }
       );
       return response.data;
     } catch (error) {
+      console.error("Fetch appointments error:", error);
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -159,10 +193,12 @@ export const fetchTherapistAppointments = createAsyncThunk(
   async (therapistId, thunkAPI) => {
     try {
       const response = await axios.get("http://localhost:5222/api/Appointments/Therapist", {
-        params: { therapistId }
+        params: { therapistId },
+        timeout: 10000
       });
       return response.data;
     } catch (error) {
+      console.error("Fetch therapist appointments error:", error);
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }

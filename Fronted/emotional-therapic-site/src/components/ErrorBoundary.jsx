@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert, Box, Button } from '@mui/material';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,7 +11,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error: error,
       errorInfo: errorInfo
@@ -22,24 +21,28 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <Box sx={{ p: 3 }}>
-          <Alert severity="error" sx={{ mb: 2 }}>
-            Something went wrong in the application
-          </Alert>
-          <Button 
-            variant="contained" 
-            onClick={() => window.location.reload()}
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo && this.state.errorInfo.componentStack}
+          </details>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ 
+              marginTop: '10px', 
+              padding: '10px 20px', 
+              backgroundColor: '#007bff', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
           >
             Reload Page
-          </Button>
-          {process.env.NODE_ENV === 'development' && (
-            <details style={{ whiteSpace: 'pre-wrap', marginTop: '16px' }}>
-              <summary>Error Details (Development)</summary>
-              <pre>{this.state.error && this.state.error.toString()}</pre>
-              <pre>{this.state.errorInfo.componentStack}</pre>
-            </details>
-          )}
-        </Box>
+          </button>
+        </div>
       );
     }
 
@@ -48,14 +51,3 @@ class ErrorBoundary extends React.Component {
 }
 
 export default ErrorBoundary;
-
-// שימוש ב-App.jsx:
-// import ErrorBoundary from './components/ErrorBoundary';
-// 
-// function App() {
-//   return (
-//     <ErrorBoundary>
-//       {/* כל האפליקציה שלך */}
-//     </ErrorBoundary>
-//   );
-// }

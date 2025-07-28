@@ -69,7 +69,6 @@ public class AppointmentsController : ControllerBase
         }
     }
 
-    // ✅ תיקון עיקרי - קבלת פרמטרים כ-string ופרסינג נכון
     [HttpPost("ScheduleAppointment")]
     public async Task<ActionResult<bool>> ScheduleAppointment(
         [FromQuery] string therapistId,
@@ -82,7 +81,6 @@ public class AppointmentsController : ControllerBase
             _logger.LogInformation("ScheduleAppointment called with: therapistId={TherapistId}, date={Date}, time={Time}, clientId={ClientId}",
                 therapistId, date, time, clientId);
 
-            // ✅ בדיקת קלט חובה
             if (string.IsNullOrEmpty(therapistId))
             {
                 _logger.LogWarning("TherapistId is null or empty");
@@ -107,7 +105,6 @@ public class AppointmentsController : ControllerBase
                 return BadRequest(new { message = "נדרשת שעה." });
             }
 
-            // ✅ פרסינג התאריך והשעה עם טיפול בשגיאות
             DateOnly parsedDate;
             if (!DateOnly.TryParse(date, out parsedDate))
             {
@@ -124,30 +121,28 @@ public class AppointmentsController : ControllerBase
 
             _logger.LogInformation("Parsed values: date={ParsedDate}, time={ParsedTime}", parsedDate, parsedTime);
 
-            // ✅ בדיקה אם המטפל קיים
             var therapists = await _blTherapist.GetAllTherapists();
-            var therapist = therapists.FirstOrDefault(t => t.Id == therapistId);
+            var therapist = therapists.FirstOrDefault(t => t.Id.ToString().Trim().Equals(therapistId.ToString().Trim()));
             if (therapist == null)
             {
                 _logger.LogWarning("Therapist not found: {TherapistId}", therapistId);
                 return BadRequest(new { message = "המטפל לא נמצא." });
             }
 
-            // ✅ בדיקה שהשעה באמת פנויה
             _logger.LogInformation("Checking available hours for therapist {TherapistId} on {Date}", therapistId, parsedDate);
             var availableHours = await _blEmptyAppointment.GetAvailableHours(therapistId, parsedDate);
 
             _logger.LogInformation("Available hours: {AvailableHours}", string.Join(", ", availableHours));
             _logger.LogInformation("Requested time: {RequestedTime}", parsedTime);
 
-            if (!availableHours.Contains(parsedTime))
+            var parsedTimeString = parsedTime.ToString("HH:mm");
+            var availableTimeStrings = availableHours.Select(t => t.ToString("HH:mm")).ToList();
+
+            if (!availableTimeStrings.Contains(parsedTimeString))
             {
-                _logger.LogWarning("Time slot not available. Requested: {RequestedTime}, Available: {AvailableHours}",
-                    parsedTime, string.Join(", ", availableHours));
                 return BadRequest(new { message = "התור הנבחר אינו זמין או שהמטפל אינו פנוי בשעה זו." });
             }
 
-            // ✅ קביעת התור
             _logger.LogInformation("Attempting to schedule appointment");
             var result = await _blClient.ScheduleAppointment(therapistId, parsedDate, parsedTime, clientId);
 
@@ -247,7 +242,6 @@ public class AppointmentsController : ControllerBase
         }
     }
 
-    // ✅ נקודת קצה מקורית
     [HttpGet("AvailableHours")]
     public async Task<ActionResult<List<TimeOnly>>> GetAvailableHours([FromQuery] string therapistId, [FromQuery] string date)
     {
@@ -283,7 +277,6 @@ public class AppointmentsController : ControllerBase
         }
     }
 
-    // ✅ נקודת קצה חדשה שהפרונטאנד מחפש
     [HttpGet("GetAvailableHours")]
     public async Task<ActionResult<List<TimeOnly>>> GetAvailableHoursAlias([FromQuery] string therapistId, [FromQuery] string date)
     {
@@ -336,7 +329,6 @@ public class AppointmentsController : ControllerBase
         }
     }
 
-    // ✅ נקודת קצה חסרה לקבלת תורים של לקוח
     [HttpGet("GetByClient/{clientId}")]
     public async Task<ActionResult<List<object>>> GetClientAppointments(string clientId)
     {
@@ -347,8 +339,6 @@ public class AppointmentsController : ControllerBase
                 return BadRequest(new { message = "Client ID is required." });
             }
 
-            // תצטרך ליישם את השיטה הזאת ב-Business Logic שלך
-            // או להשתמש בשיטה קיימת
             var appointments = await _blBusyAppointment.GetAllAppointmentsForClient(clientId);
             return Ok(appointments);
         }

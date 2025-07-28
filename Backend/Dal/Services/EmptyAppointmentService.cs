@@ -27,7 +27,8 @@ public class EmptyAppointmentService : IEmptyAppointment
 
     public async Task<bool> DeleteAsync(string id)
     {
-        var entity = await _db.EmptyAppointments.FindAsync(id);
+        int code = int.Parse(id);
+        var entity = await _db.EmptyAppointments.FindAsync(code);
         if (entity == null) return false;
         _db.EmptyAppointments.Remove(entity);
         return await _db.SaveChangesAsync() > 0;

@@ -49,7 +49,6 @@ function ClientDashboard() {
       .unwrap()
       .then(() => {
         dispatch(setSuccess('Appointment deleted successfully!'));
-        // רענן את רשימת התורים לאחר מחיקה מוצלחת
         dispatch(fetchAppointments(clientId));
       })
       .catch((err) => {
@@ -65,25 +64,21 @@ function ClientDashboard() {
       <AppointmentScheduler open={open} handleClose={() => setOpen(false)} />
 
       {error && (
-  <Alert severity="error" sx={{ mb: 2 }}>
-    {(() => {
-      if (typeof error === 'string') return error;
-      if (error?.message) return error.message;
-      if (error?.data?.message) return error.data.message;
-      return 'An unexpected error occurred';
-    })()}
-  </Alert>
-)}
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {(() => {
+            if (typeof error === 'string') return error;
+            if (error?.message) return error.message;
+            if (error?.data?.message) return error.data.message;
+            return 'An unexpected error occurred';
+          })()}
+        </Alert>
+      )}
       {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
 
       {appointments.length > 0 ? (
         <>
           <Typography variant="h5" sx={{ mb: 2 }}>Your appointments:</Typography>
-          {appointments.map((app, index) => {
-            // בדיקה מה יש בתור
-            console.log(`Appointment ${index}:`, app);
-            
-            // נסה למצוא את מזהה התור בכל הדרכים האפשריות
+          {appointments.map((app, index) => {           
             const appointmentId = app.appointmentId || app.id || app.code || app.Code;
             
             return (
@@ -100,7 +95,7 @@ function ClientDashboard() {
                   <Button
                     variant="outlined"
                     color="error"
-                    disabled={!appointmentId} // נבטל את הכפתור אם אין מזהה
+                    disabled={!appointmentId} 
                     onClick={() => handleDeleteAppointment(appointmentId, clientId)}
                   >
                     Delete Appointment

@@ -52,7 +52,6 @@ const appointmentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Cancel Appointment
       .addCase(cancelAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -60,20 +59,18 @@ const appointmentsSlice = createSlice({
       .addCase(cancelAppointment.fulfilled, (state, action) => {
         state.loading = false;
         const appointmentIdToRemove = action.payload;
-        
+
         state.appointments = state.appointments.filter((app) => {
           const appId = app.appointmentId || app.id || app.code || app.Code;
           return appId != appointmentIdToRemove;
         });
-        
+
         state.success = "Appointment cancelled successfully!";
       })
       .addCase(cancelAppointment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to cancel appointment";
       })
-      
-      // Fetch Therapists
       .addCase(fetchTherapists.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -86,8 +83,7 @@ const appointmentsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
-      // Fetch Available Therapists By Date
+
       .addCase(fetchAvailableTherapistsByDate.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -100,22 +96,25 @@ const appointmentsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
-      // Schedule Appointment
       .addCase(scheduleAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = null;
       })
-      .addCase(scheduleAppointment.fulfilled, (state) => {
+      .addCase(scheduleAppointment.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = "Appointment scheduled successfully!";
+        state.success = action.payload?.message || "Appointment scheduled successfully!";
+        state.error = null;
+        state.selectedTherapist = "";
+        state.selectedDate = "";
+        state.selectedTime = "";
+        state.availableHours = [];
       })
       .addCase(scheduleAppointment.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Failed to schedule appointment";
+        state.success = null;
       })
-      
-      // Fetch Available Hours - החשוב ביותר!
       .addCase(fetchAvailableHours.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -127,10 +126,9 @@ const appointmentsSlice = createSlice({
       .addCase(fetchAvailableHours.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.availableHours = []; // אפס את השעות בשגיאה
+        state.availableHours = []; 
       })
-      
-      // Fetch Appointments
+
       .addCase(fetchAppointments.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -143,8 +141,7 @@ const appointmentsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
-      // Fetch Therapist Appointments
+
       .addCase(fetchTherapistAppointments.pending, (state) => {
         state.loading = true;
         state.error = null;
